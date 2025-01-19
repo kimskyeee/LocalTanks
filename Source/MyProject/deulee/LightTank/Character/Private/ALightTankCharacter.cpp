@@ -501,14 +501,14 @@ void ALightTankCharacter::InitWidget()
 	HPWidgetComponent->SetRelativeLocation({0, 0, 250});
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> WBP_HPWidget
-	(TEXT("/Game/NewSkye/UI/WBP_HealthBar.WBP_HealthBar_C"));
+	(TEXT("/Game/NewSkye/PlayerUI/WBP_HealthBar.WBP_HealthBar_C"));
 	if (WBP_HPWidget.Succeeded())
 	{
 		HPWidgetClass = WBP_HPWidget.Class;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterial> M_HPBar(
-	TEXT("/Game/NewSkye/UI/Widget3DPassThrough_twoside.Widget3DPassThrough_twoside"));
+	TEXT("/Game/NewSkye/PlayerUI/Widget3DPassThrough_twoside.Widget3DPassThrough_twoside"));
 	if (M_HPBar.Succeeded())
 	{
 		HPBarMaterial = M_HPBar.Object;

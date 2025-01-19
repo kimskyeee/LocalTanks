@@ -6,10 +6,11 @@
 #include "DamageInterface.h"
 #include "TeamInterface.h"
 #include "GameFramework/Pawn.h"
+#include "WheeledVehiclePawn.h"
 #include "Mk_TankPawn.generated.h"
 
 UCLASS()
-class MYPROJECT_API AMk_TankPawn : public APawn, public IDamageInterface, public ITeamInterface
+class MYPROJECT_API AMk_TankPawn : public AWheeledVehiclePawn, public IDamageInterface, public ITeamInterface
 {
 	GENERATED_BODY()
 
