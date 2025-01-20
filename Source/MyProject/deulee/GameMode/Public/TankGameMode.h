@@ -17,6 +17,13 @@ protected:
 	void OnWinnerDetected(ETeam WinningTeam);
 	virtual void BeginPlay() override;
 
-private:
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TankGameMode")
+	TSubclassOf<class UOutcomeUI> PlayerWinnerWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TankGameMode")
+	TSubclassOf<class UOutcomeUI> AIWinnerWidgetClass;
+
+	UPROPERTY()
+	UOutcomeUI* PlayerWinnerWidget = nullptr;
+	UPROPERTY()
+	UOutcomeUI* AIWinnerWidget = nullptr;
 };

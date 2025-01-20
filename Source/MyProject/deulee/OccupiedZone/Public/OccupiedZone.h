@@ -33,11 +33,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintAssignable, Category = "OccupiedZone")
 	FOnWinnerDetected OnWinnerDetectedDelegate;
+
 protected:
 	ETeam DetermineControllingTeam();
 	bool ValidateTanksState();
 	void SetControllingTeam();
-	void BroadCaseWinningTeam() const;
+	void BroadCaseWinningTeam();
 	void UpdateCaptureProgress(float DeltaSeconds);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
@@ -54,10 +55,22 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
 	ETeam ControllingTeam;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
+	ETeam PrevTeam;
+	
 	// 0 ~ 100
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
 	float CaptureProgress = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
 	TArray<class AActor*> OverlappedTanks;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
+	TSubclassOf<class UOccupyUI> OccupyUIClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
+	class UOccupyUI* OccupyUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OccupiedZone")
+	bool bGameEnd = false;
 };

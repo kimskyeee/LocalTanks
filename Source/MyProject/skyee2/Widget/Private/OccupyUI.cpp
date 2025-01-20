@@ -9,12 +9,8 @@
 void UOccupyUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (OingText_Green) OingText_Green->SetVisibility(ESlateVisibility::Collapsed);
-	if (OingText_Red) OingText_Red->SetVisibility(ESlateVisibility::Collapsed);
-	if (OingNumText_Green) OingNumText_Green->SetVisibility(ESlateVisibility::Collapsed);
-	if (OingNumText_Red) OingNumText_Red->SetVisibility(ESlateVisibility::Collapsed);
-	if (OSuccessText_Green) OSuccessText_Green->SetVisibility(ESlateVisibility::Collapsed);
-	if (OSuccessText_Red) OSuccessText_Red->SetVisibility(ESlateVisibility::Collapsed);
+
+	OProgressReset();
 }
 
 void UOccupyUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -26,6 +22,8 @@ void UOccupyUI::OProgressBarGreen(float CurrentP, float TotalP)
 {
 	float Percent = CurrentP / TotalP;
 	OProgressBar_Green->SetPercent(Percent);
+	
+	OProgressBar_Green->SetVisibility(ESlateVisibility::Visible);
 
 	int32 DisplayPercent = FMath::Clamp(FMath::RoundToInt(Percent * 100.0f), 0, 100);
 	FText PercentText = FText::AsNumber(DisplayPercent);
@@ -35,12 +33,12 @@ void UOccupyUI::OProgressBarGreen(float CurrentP, float TotalP)
 	{
 		OingNumText_Green->SetVisibility(ESlateVisibility::Visible);
 		OingText_Green->SetVisibility(ESlateVisibility::Visible);
-		OSuccessText_Green->SetVisibility(ESlateVisibility::Collapsed);
+		OSuccessText_Green->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		OingNumText_Green->SetVisibility(ESlateVisibility::Collapsed);
-		OingText_Green->SetVisibility(ESlateVisibility::Collapsed);
+		OingNumText_Green->SetVisibility(ESlateVisibility::Hidden);
+		OingText_Green->SetVisibility(ESlateVisibility::Hidden);
 		OSuccessText_Green->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -50,6 +48,8 @@ void UOccupyUI::OProgressBarRed(float CurrentP, float TotalP)
 	float Percent = CurrentP / TotalP;
 	OProgressBar_Red->SetPercent(Percent);
 
+	OProgressBar_Red->SetVisibility(ESlateVisibility::Visible);
+
 	int32 DisplayPercent = FMath::Clamp(FMath::RoundToInt(Percent * 100.0f), 0, 100);
 	FText PercentText = FText::AsNumber(DisplayPercent);
 	OingNumText_Red->SetText(PercentText);
@@ -58,13 +58,27 @@ void UOccupyUI::OProgressBarRed(float CurrentP, float TotalP)
 	{
 		OingNumText_Red->SetVisibility(ESlateVisibility::Visible);
 		OingText_Red->SetVisibility(ESlateVisibility::Visible);
-		OSuccessText_Red->SetVisibility(ESlateVisibility::Collapsed);
+		OSuccessText_Red->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		OingNumText_Red->SetVisibility(ESlateVisibility::Collapsed);
-		OingText_Red->SetVisibility(ESlateVisibility::Collapsed);
+		OingNumText_Red->SetVisibility(ESlateVisibility::Hidden);
+		OingText_Red->SetVisibility(ESlateVisibility::Hidden);
 		OSuccessText_Red->SetVisibility(ESlateVisibility::Visible);
 	}
-	
+}
+
+void UOccupyUI::OProgressReset()
+{
+	OingText_Green->SetVisibility(ESlateVisibility::Hidden);
+	OingText_Red->SetVisibility(ESlateVisibility::Hidden);
+	OingNumText_Green->SetVisibility(ESlateVisibility::Hidden);
+	OingNumText_Red->SetVisibility(ESlateVisibility::Hidden);
+	OSuccessText_Green->SetVisibility(ESlateVisibility::Hidden);
+	OSuccessText_Red->SetVisibility(ESlateVisibility::Hidden);
+
+	OProgressBar_Green->SetPercent(0.0f);
+	OProgressBar_Red->SetPercent(0.0f);
+	OProgressBar_Green->SetVisibility(ESlateVisibility::Hidden);
+	OProgressBar_Red->SetVisibility(ESlateVisibility::Hidden);
 }

@@ -2,7 +2,9 @@
 
 #include "DamageInterface.h"
 #include "FastLogger.h"
+#include "OccupyUI.h"
 #include "TeamInterface.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
 
 AOccupiedZone::AOccupiedZone()
@@ -37,17 +39,34 @@ AOccupiedZone::AOccupiedZone()
 
 	CylinderMesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	CylinderMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	static ConstructorHelpers::FClassFinder<UOccupyUI> WBP_OccupyUIClass
+	(TEXT("/Game/NewSkye/GameUI/WBP_Occupy.WBP_Occupy_C"));
+	if (WBP_OccupyUIClass.Succeeded())
+	{
+		OccupyUIClass = WBP_OccupyUIClass.Class;
+	}
 }
 
 void AOccupiedZone::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OccupyUI = Cast<UOccupyUI>(CreateWidget<UOccupyUI>(GetWorld(), OccupyUIClass));
+	if (OccupyUI)
+	{
+		OccupyUI->AddToViewport();
+	}
 }
 
 void AOccupiedZone::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	if (bGameEnd)
+	{
+		return;
+	}
 	SetControllingTeam();
 	UpdateCaptureProgress(DeltaSeconds);
 	BroadCaseWinningTeam();
@@ -78,7 +97,7 @@ void AOccupiedZone::OnTankEndOverlap(class UPrimitiveComponent* OverlappedComp, 
 ETeam AOccupiedZone::DetermineControllingTeam()
 {
 	ETeam ResultTeam = ETeam::None;
-	ETeam PrevTeam = ResultTeam;
+	ETeam InPrevTeam = ResultTeam;
 	for (int i = 0; i < OverlappedTanks.Num(); ++i)
 	{
 		if (!OverlappedTanks[i]->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
@@ -86,11 +105,11 @@ ETeam AOccupiedZone::DetermineControllingTeam()
 			continue;
 		}
 		ResultTeam = ITeamInterface::Execute_GetTeam(OverlappedTanks[i]);
-		if (PrevTeam == ETeam::None)
+		if (InPrevTeam == ETeam::None)
 		{
-			PrevTeam = ResultTeam;
+			InPrevTeam = ResultTeam;
 		}
-		else if (PrevTeam != ResultTeam)
+		else if (InPrevTeam != ResultTeam)
 		{
 			return ETeam::None;
 		}
@@ -132,31 +151,44 @@ bool AOccupiedZone::ValidateTanksState()
 void AOccupiedZone::SetControllingTeam()
 {
 	// 팀 결정 로직 매핑
+	PrevTeam = ControllingTeam == ETeam::None ? PrevTeam : ControllingTeam;
 	ControllingTeam = DetermineControllingTeam();
 	ControllingTeam = ValidateTanksState() ? ControllingTeam : ETeam::None;
 }
 
-void AOccupiedZone::BroadCaseWinningTeam() const
+void AOccupiedZone::BroadCaseWinningTeam()
 {
 	// -1 : AI, 1 : Player
 	if (FMath::Abs(CaptureProgress) >= 100)
 	{
 		OnWinnerDetectedDelegate.Broadcast(ControllingTeam);
+		OccupyUI->OProgressReset();
+		bGameEnd = true;
 	}
 }
 
 void AOccupiedZone::UpdateCaptureProgress(float DeltaSeconds)
 {
-	switch (ControllingTeam)
+	if (ControllingTeam != PrevTeam && ControllingTeam != ETeam::None)
 	{
-	case ETeam::Player:
-		CaptureProgress += CaptureRate * DeltaSeconds;
+		CaptureProgress = 0;
+		OccupyUI->OProgressReset();
+	}
+	int32 Sign = ControllingTeam == ETeam::Player ? 1 : ControllingTeam == ETeam::None ? 0 : -1;
+	CaptureProgress += CaptureRate * DeltaSeconds * Sign;
+	CaptureProgress = FMath::Clamp(CaptureProgress, -100.f, 100.f);
+
+	constexpr float MaxCaptureProgress = 100;
+
+	switch (Sign)
+	{
+	case 1:
+		OccupyUI->OProgressBarGreen(CaptureProgress, MaxCaptureProgress);
 		break;
-	case ETeam::AI:
-		CaptureProgress -= CaptureRate * DeltaSeconds;
+	case -1:
+		OccupyUI->OProgressBarRed(FMath::Abs(CaptureProgress), MaxCaptureProgress);
 		break;
 	default:
 		break;
 	}
-	CaptureProgress = FMath::Clamp(CaptureProgress, -100.f, 100.f);
 }
