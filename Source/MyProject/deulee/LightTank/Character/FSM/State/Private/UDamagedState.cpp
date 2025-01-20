@@ -2,24 +2,14 @@
 
 #include "ACLightTankFSM.h"
 #include "ALightTankCharacter.h"
+#include "OccupationComponent.h"
 
 void UDamagedState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 {
 	Super::Enter(Tank, FSM);
 
-	GetWorld()->GetTimerManager().ClearTimer(OccupyDelayTimerHandle);
 	Tank->SetDamaged(false);
-	Tank->SetOccupyingAvailable(false);
-	
-	TWeakObjectPtr<ALightTankCharacter> WeakTank = Tank;
-	GetWorld()->GetTimerManager().SetTimer(OccupyDelayTimerHandle, FTimerDelegate::CreateLambda([WeakTank]()
-	{
-		ALightTankCharacter* StrongTank = WeakTank.Get();
-		if (StrongTank)
-		{
-			StrongTank->SetOccupyingAvailable(true);
-		}
-	}), bOccupyDelay, false);
+	Tank->GetOccupationComponent()->StartOccupationDelayed();
 }
 
 void UDamagedState::Update(ALightTankCharacter* Tank, UACLightTankFSM* FSM, float DeltaTime)

@@ -31,8 +31,6 @@ public:
 	bool IsInCenter();
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	void SetDamaged(bool bCond);
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	void SetOccupyingAvailable(bool bCond);
 
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -56,7 +54,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	bool IsInFinalGoal();
 
-	/// 공격 설정을 위한 함수들
+	UFUNCTION(BlueprintCallable, Category = "Tank State")
+	bool IsReloadedShell();
+	UFUNCTION(BlueprintCallable, Category = "Tank State")
+	void Fire();
+	
+	/// Getter, Setter 함수들
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	void SetTurretTargetAngle(float TargetAngle);
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
@@ -73,13 +76,11 @@ public:
 	float GetGunMinElevationAngle();
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	float GetGunMaxElevationAngle();
+	UFUNCTION(BlueprintCallable, Category = "Tank State")
+	class UOccupationComponent* GetOccupationComponent() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	EShellID GetShellID() const;
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	bool IsReloadedShell();
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	void Fire();
 
 	/// 데미지 전달 함수
 	// UFUNCTION(BlueprintCallable, Category = "Tank State")
@@ -87,7 +88,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	float TakeDamageCalledByBP(struct FMyDamageStructure DamageInfo, class AController* EventInstigator, AActor* DamageCauser);
 
-	// IDamageInterface 구현
+	/// IDamageInterface 구현
 	virtual bool IsPossibleToOccpupy_Implementation() override;
 	virtual ETeam GetTeam_Implementation() const override {return ETeam::AI;};
 	// NOT USED
@@ -305,5 +306,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	bool bDamaged = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
-	bool bOccupyingAvailable = true;
+	class UOccupationComponent* OccupationComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	class UParticleSystem* GunFireVFX;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	class UParticleSystem* ShockWaveVFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	class UParticleSystemComponent* GunFirePSC;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	class UParticleSystemComponent* ShockWavePSC;
 };

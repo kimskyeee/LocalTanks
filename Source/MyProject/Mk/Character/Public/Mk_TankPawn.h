@@ -35,4 +35,8 @@ public:
 	virtual bool IsPossibleToOccpupy_Implementation() override;
 
 	virtual ETeam GetTeam_Implementation() const override { return ETeam::Player; }
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
+	class UOccupationComponent* OccupationComponent;
 };

@@ -23,6 +23,5 @@ void UHPWidget::SetName(const FString& Str)
 void UHPWidget::UpdateHPProgessBar(float CurrHP, float MaxHP)
 {
 	float Percent = CurrHP / MaxHP;
-	FFastLogger::LogScreen(FColor::Green, TEXT("HP : %f"), Percent);
 	ProgressBar_HP->SetPercent(Percent);
 }

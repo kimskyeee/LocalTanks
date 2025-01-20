@@ -3,12 +3,16 @@
 
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
+#include "OccupationComponent.h"
+
 
 // Sets default values
 AMk_TankPawn::AMk_TankPawn()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	OccupationComponent = CreateDefaultSubobject<UOccupationComponent>(TEXT("OccupationComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +46,7 @@ float AMk_TankPawn::GetMaxHealth_Implementation()
 
 bool AMk_TankPawn::TakeDamage_Implementation(FMyDamageStructure DamageInfo)
 {
+	OccupationComponent->StartOccupationDelayed();
 	return IDamageInterface::TakeDamage_Implementation(DamageInfo);
 }
 
@@ -52,6 +57,6 @@ bool AMk_TankPawn::IsDead_Implementation()
 
 bool AMk_TankPawn::IsPossibleToOccpupy_Implementation()
 {
-	return IDamageInterface::IsPossibleToOccpupy_Implementation();
+	return OccupationComponent->IsOccupyingAvailable();
 }
 
