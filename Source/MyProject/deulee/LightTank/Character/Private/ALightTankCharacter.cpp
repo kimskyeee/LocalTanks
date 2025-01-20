@@ -7,6 +7,7 @@
 #include "GeometryTypes.h"
 #include "HPWidget.h"
 #include "MyDamageStructure.h"
+#include "OccupationComponent.h"
 #include "OccupiedZone.h"
 #include "SCGroundSensor.h"
 #include "ShellDamageEvent.h"
@@ -21,6 +22,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "UObject/UObjectClusters.h"
 
 ALightTankCharacter::ALightTankCharacter()
@@ -147,12 +150,6 @@ void ALightTankCharacter::SetDamaged(bool bCond)
 	bDamaged = bCond;
 }
 
-
-void ALightTankCharacter::SetOccupyingAvailable(bool bCond)
-{
-	bOccupyingAvailable = bCond;
-}
-
 void ALightTankCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                          UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -232,6 +229,11 @@ float ALightTankCharacter::GetGunMaxElevationAngle()
 	return MaxGunAngle;
 }
 
+class UOccupationComponent* ALightTankCharacter::GetOccupationComponent() const
+{
+	return OccupationComponent;
+}
+
 EShellID ALightTankCharacter::GetShellID() const
 {
 	return ShellID;
@@ -254,7 +256,12 @@ void ALightTankCharacter::Fire()
 			StrongThis->bAvailableToFire = true;
 		}
 	}), ReloadTime, false);
-	Armor->FireShell(ShellID, GunMuzzle->GetComponentLocation(), GunMuzzle->GetComponentRotation(), ShellProfileName);
+	FVector ShellLocation = GunMuzzle->GetComponentLocation();
+	ShellLocation += GunMuzzle->GetForwardVector() * 650;
+	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName);
+
+	GunFirePSC->Activate(true);
+	ShockWavePSC->Activate(true);
 }
 
 // Not Used
@@ -300,7 +307,7 @@ float ALightTankCharacter::TakeDamageCalledByBP(struct FMyDamageStructure Damage
 
 bool ALightTankCharacter::IsPossibleToOccpupy_Implementation()
 {
-	return bOccupyingAvailable;
+	return OccupationComponent->IsOccupyingAvailable();
 } 
 
 void ALightTankCharacter::InitDelegate()
@@ -412,6 +419,37 @@ void ALightTankCharacter::InitComponents()
 	GunMuzzle->SetRelativeLocation({167, 0, 12});
 
 	Armor = CreateDefaultSubobject<UArmor>(TEXT("Armor"));
+
+	OccupationComponent = CreateDefaultSubobject<UOccupationComponent>(TEXT("OccupationComponent"));
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_GunFireVFX
+	(TEXT("/Game/VigilanteContent/Vehicles/West_Tank_M1A1Abrams/FX/PS_MuzzleFire_01_M1A1Abrams.PS_MuzzleFire_01_M1A1Abrams"));
+	if (P_GunFireVFX.Succeeded())
+	{
+		GunFireVFX = P_GunFireVFX.Object;
+	}
+	
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_ShockWaveVFX
+	(TEXT("/Game/VigilanteContent/Vehicles/West_Tank_M1A1Abrams/FX/PS_ShockWave_M1A1Abrams.PS_ShockWave_M1A1Abrams"));
+	if (P_ShockWaveVFX.Succeeded())
+	{
+		ShockWaveVFX = P_ShockWaveVFX.Object;
+	}
+
+	GunFirePSC = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("GunFirePSC"));
+	GunFirePSC->SetupAttachment(GunMuzzle);
+	GunFirePSC->SetRelativeLocation({0, 0, 0});
+	GunFirePSC->SetRelativeRotation({0, 0, 0});
+	GunFirePSC->SetTemplate(GunFireVFX);
+	GunFirePSC->bAutoActivate = false;
+
+	ShockWavePSC = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShockWavePSC"));
+	ShockWavePSC->SetupAttachment(GunMuzzle);
+	ShockWavePSC->SetRelativeLocation({0, 0, 0});
+	ShockWavePSC->SetRelativeRotation({0, 0, 0});
+	ShockWavePSC->SetWorldScale3D({0.5, 0.5, 0.5});
+	ShockWavePSC->SetTemplate(ShockWaveVFX);
+	ShockWavePSC->bAutoActivate = false;
 }
 
 void ALightTankCharacter::InitCollisionPreset()

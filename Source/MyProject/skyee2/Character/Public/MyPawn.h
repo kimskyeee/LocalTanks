@@ -26,4 +26,7 @@ public:
 protected:
 	// 게임 시작시 호출
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
+	class UOccupationComponent* OccupationComponent;
 };
