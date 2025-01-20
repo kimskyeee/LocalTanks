@@ -2,10 +2,14 @@
 
 #include "MyPawn.h"
 
+#include "OccupationComponent.h"
+
 AMyPawn::AMyPawn()
 {
 	// 틱 함수 활성화
 	PrimaryActorTick.bCanEverTick = true;
+
+	OccupationComponent = CreateDefaultSubobject<UOccupationComponent>(TEXT("OccupationComponent"));
 }
 
 void AMyPawn::BeginPlay()
@@ -35,6 +39,7 @@ float AMyPawn::GetMaxHealth_Implementation()
 
 bool AMyPawn::TakeDamage_Implementation(FMyDamageStructure DamageInfo)
 {
+	OccupationComponent->StartOccupationDelayed();
 	return IDamageInterface::TakeDamage_Implementation(DamageInfo);
 }
 
@@ -45,5 +50,5 @@ bool AMyPawn::IsDead_Implementation()
 
 bool AMyPawn::IsPossibleToOccpupy_Implementation()
 {
-	return IDamageInterface::IsPossibleToOccpupy_Implementation();
+	return OccupationComponent->IsOccupyingAvailable();
 }

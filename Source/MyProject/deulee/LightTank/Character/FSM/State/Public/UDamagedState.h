@@ -23,11 +23,4 @@ public:
 
 	virtual ETankStateID GetID() const override
 	{return ETankStateID::Damaged;};
-
-protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank State")
-	float bOccupyDelay = 1.0f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank State")
-	FTimerHandle OccupyDelayTimerHandle;
 };
