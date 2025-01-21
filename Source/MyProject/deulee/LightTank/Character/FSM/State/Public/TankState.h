@@ -14,6 +14,9 @@ class UTankState : public UObject
 	GENERATED_BODY()
 public:
 	UTankState();
+
+	UFUNCTION(BlueprintCallable)
+	void Initialize();
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM) {}

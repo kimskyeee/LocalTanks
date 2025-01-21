@@ -25,8 +25,6 @@ protected:
 	bool IsPossibleToApproach(ALightTankCharacter* Tank);
 	void SetCenter();
 	
-	// UPROPERTY()
-	// class UAStarPathFinding* PathFinding;
 	UPROPERTY()
 	float ApproachDistance = 4500.f;
 

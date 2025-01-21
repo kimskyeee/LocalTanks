@@ -13,9 +13,11 @@ class UArmor : public UActorComponent
 	GENERATED_BODY()
 public:
 	UArmor();
+
+	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Armor")
-	void FireShell(EShellID ShellID, FVector Location, FRotator Rotation, FName ProfileName);
+	void FireShell(EShellID ShellID, FVector Location, FRotator Rotation, FName ProfileName, UClass* TargetClass);
 	UFUNCTION(BlueprintCallable, Category = "Armor")
 	void ReleaseShell(EShellID ShellID, AShell* Shell);
 

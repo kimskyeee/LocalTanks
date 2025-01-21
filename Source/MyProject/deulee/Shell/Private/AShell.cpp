@@ -113,3 +113,8 @@ void AShell::SetInitialVelocity()
         ProjectileMovement->Activate(true);
 	}
 }
+
+void AShell::SetTarget(class UClass* TargetClass)
+{
+	ShellTargetClass = TargetClass;
+}

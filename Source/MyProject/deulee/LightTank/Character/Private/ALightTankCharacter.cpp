@@ -2,29 +2,24 @@
 
 #include "ACLightTankFSM.h"
 #include "AShell.h"
-#include "DataTableEditorUtils.h"
 #include "FastLogger.h"
-#include "GeometryTypes.h"
 #include "HPWidget.h"
 #include "MyDamageStructure.h"
 #include "OccupationComponent.h"
 #include "OccupiedZone.h"
 #include "SCGroundSensor.h"
-#include "ShellDamageEvent.h"
 #include "UArmor.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Engine/DamageEvents.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "UObject/UObjectClusters.h"
 
 ALightTankCharacter::ALightTankCharacter()
 {
@@ -265,39 +260,18 @@ void ALightTankCharacter::Fire()
 	}), ReloadTime, false);
 	FVector ShellLocation = GunMuzzle->GetComponentLocation();
 	ShellLocation += GunMuzzle->GetForwardVector() * 650;
-	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName);
-
+	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName, AMk_TankPawn::StaticClass());
 	GunFirePSC->Activate(true);
-	// ShockWavePSC->Activate(true);
 }
 
-// Not Used
-// float ALightTankCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-// 	class AController* EventInstigator, AActor* DamageCauser)
-// {
-// 	float ActualDamage = 0.0f;
-//
-// 	AShell* Shell = Cast<AShell>(DamageCauser);
-// 	if (Shell)
-// 	{
-// 		ActualDamage = Shell->GetShellInfo().ShellDamage;
-// 	}
-//
-// 	/// 만약 코드로만 진행되었다면 다음과 같이 했을 듯..
-// 	// if (DamageEvent.IsOfType(FShellDamageEvent::ClassID))
-// 	// {
-// 	// 	FShellDamageEvent* ShellDamageEvent = (FShellDamageEvent*)&DamageEvent;
-// 	// 	ActualDamage = ShellDamageEvent->ShellInfo.ShellDamage;
-// 	// 	this->HP -= ActualDamage;
-// 	// }
-// 	return ActualDamage;
-// }
-
-float ALightTankCharacter::TakeDamageCalledByBP(struct FMyDamageStructure DamageInfo,
-	class AController* EventInstigator, AActor* DamageCauser)
+bool ALightTankCharacter::IsPossibleToOccpupy_Implementation()
 {
-	float ActualDamage = 0.0f;
-	ActualDamage = DamageInfo.ShellBasicInfo.ShellDamage;
+	return OccupationComponent->IsOccupyingAvailable();
+}
+
+bool ALightTankCharacter::TakeDamage_Implementation(FMyDamageStructure DamageInfo)
+{
+	float ActualDamage = DamageInfo.ShellBasicInfo.ShellDamage;
 	HP -= ActualDamage;
 	HP = FMath::Clamp(HP, 0.0f, MaxHP);
 	
@@ -309,13 +283,8 @@ float ALightTankCharacter::TakeDamageCalledByBP(struct FMyDamageStructure Damage
 		bDamaged = true;
 	}
 	
-	return ActualDamage;
+	return bDamaged;
 }
-
-bool ALightTankCharacter::IsPossibleToOccpupy_Implementation()
-{
-	return OccupationComponent->IsOccupyingAvailable();
-} 
 
 void ALightTankCharacter::InitDelegate()
 {
@@ -425,7 +394,7 @@ void ALightTankCharacter::InitComponents()
 	GunMuzzle->SetupAttachment(GunCollision);
 	GunMuzzle->SetRelativeLocation({167, 0, 12});
 
-	Armor = CreateDefaultSubobject<UArmor>(TEXT("Armor"));
+	Armor = CreateDefaultSubobject<UArmor>(TEXT("Armor_LightTank"));
 
 	OccupationComponent = CreateDefaultSubobject<UOccupationComponent>(TEXT("OccupationComponent"));
 

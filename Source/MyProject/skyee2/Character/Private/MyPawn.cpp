@@ -3,6 +3,8 @@
 #include "MyPawn.h"
 
 #include "OccupationComponent.h"
+#include "UArmor.h"
+#include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
 AMyPawn::AMyPawn()
 {
@@ -10,6 +12,13 @@ AMyPawn::AMyPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OccupationComponent = CreateDefaultSubobject<UOccupationComponent>(TEXT("OccupationComponent"));
+	Armor = CreateDefaultSubobject<UArmor>(TEXT("Armor"));
+}
+
+void AMyPawn::Fire(FVector ShellLocation, FRotator ShellRotation)
+{
+	ShellLocation += ShellRotation.Vector() * 650;
+	Armor->FireShell(ShellID, ShellLocation, ShellRotation, ShellProfileName, AMk_TankPawn::StaticClass());
 }
 
 void AMyPawn::BeginPlay()

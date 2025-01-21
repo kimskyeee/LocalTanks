@@ -37,7 +37,7 @@ void UShellDecalComponent::SpawnDecal(const FHitResult& HitResult, bool bHitTank
 	
 	int Frame = UKismetMathLibrary::RandomIntegerInRange(0, 3);
 
-	FVector DecalSize = bHitTank ? FVector(20.0f, 50.0f, 50.0f) : FVector(50.0f, 50.0f, 8.0f);
+	FVector DecalSize = bHitTank ? FVector(50.0f, 50.0f, 50.0f) : FVector(200.0f, 200.0f, 200.0f);
 	ShellDecalMaterial->SetScalarParameterValue(TEXT("Frame"), Frame);
 
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAttached(ShellDecalMaterial, DecalSize, HitComponent, NAME_None, ImpactPoint, DecalRotation, EAttachLocation::KeepWorldPosition, 20.0f);

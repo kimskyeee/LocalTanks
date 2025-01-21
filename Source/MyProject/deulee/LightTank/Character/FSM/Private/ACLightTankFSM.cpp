@@ -39,12 +39,10 @@ void UACLightTankFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UACLightTankFSM::ChangeState(ETankStateID NewStateID)
 {
-	// NextState = NewStateID;
 	CurrentState->Exit(OwnerActor, this);
 	PrevState = CurrentState;
 	CurrentState = StatePool[NewStateID];
 	CurrentState->Enter(OwnerActor, this);
-	// NextState = ETankStateID::None;
 }
 
 UTankState* UACLightTankFSM::GetCurrentState()
@@ -57,11 +55,6 @@ UTankState* UACLightTankFSM::GetPrevState()
 	return PrevState;
 }
 
-ETankStateID UACLightTankFSM::GetNextState()
-{
-	return NextState;
-}
-
 void UACLightTankFSM::InitStatePool()
 {
 	// 상태 객체 생성
@@ -72,4 +65,9 @@ void UACLightTankFSM::InitStatePool()
 	StatePool.Add(ETankStateID::Retreating, NewObject<URetreatingState>(this, URetreatingState::StaticClass()));
 	StatePool.Add(ETankStateID::Damaged, NewObject<UDamagedState>(this, UDamagedState::StaticClass()));
 	StatePool.Add(ETankStateID::Destroyed, NewObject<UDestroyedState>(this, UDestroyedState::StaticClass()));
+
+	for (auto& State : StatePool)
+	{
+		State.Value->Initialize();
+	}
 }
