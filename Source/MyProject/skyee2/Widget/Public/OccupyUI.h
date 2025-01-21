@@ -48,5 +48,6 @@ public:
 
 	void OProgressBarGreen(float CurrentP, float TotalP);
 	void OProgressBarRed(float CurrentP, float TotalP);
+	void OProgressReset();
 };
 
