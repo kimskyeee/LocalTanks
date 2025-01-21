@@ -157,13 +157,11 @@ void ALightTankCharacter::OnEndOverlap(UPrimitiveComponent* OverlappedComponent,
 
 void ALightTankCharacter::OnOccupiedZoneBeginOverlap()
 {
-	FFastLogger::LogScreen(FColor::Green, TEXT("Begin Overlap"));
 	bIsInCenter = true;
 }
 
 void ALightTankCharacter::OnOccupiedZoneEndOverlap()
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("End Overlap"));
 	bIsInCenter = false;
 }
 
@@ -554,10 +552,6 @@ void ALightTankCharacter::SetWidget()
 		if (HPBarMaterial)
 		{
 			HPWidgetComponent->SetMaterial(0, HPBarMaterial);
-		}
-		else
-		{
-			FFastLogger::LogScreen(FColor::Cyan, TEXT("HPBarMaterial is not set."));
 		}
 	}
 }

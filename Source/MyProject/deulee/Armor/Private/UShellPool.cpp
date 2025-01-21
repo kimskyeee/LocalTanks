@@ -26,20 +26,7 @@ AShell* UShellPool::AcquireShell(EShellID ShellID, UArmor* ArmorRef)
 		Pool.Add(ShellID, FShellArray());
 	}
 
-	UObject* Outer = GetOuter();
-	if (!Outer)
-	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("Outer is nullptr"));
-		return nullptr;
-	}
-	FFastLogger::LogScreen(FColor::Red, TEXT("Outer: %p"), Outer);
-	UWorld* World = Outer->GetWorld();
-	if (!World)
-	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("World is nullptr"));
-		return nullptr;
-	}
-	AShell* Shell = World->SpawnActor<AShell>(UShellLibrary::GetShellClass(ShellID));
+	AShell* Shell = GetWorld()->SpawnActor<AShell>(UShellLibrary::GetShellClass(ShellID));
 	if (!Shell)
 	{
 		return nullptr;

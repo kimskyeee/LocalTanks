@@ -13,7 +13,7 @@ AShell::AShell()
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	SetRootComponent(Collision);
 	Collision->SetMobility(EComponentMobility::Movable);
-	Collision->SetBoxExtent({600, 30, 30});
+	Collision->SetBoxExtent({30, 30, 30});
 
 	BulletNS = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BulletNS"));
 	BulletNS->SetupAttachment(Collision);

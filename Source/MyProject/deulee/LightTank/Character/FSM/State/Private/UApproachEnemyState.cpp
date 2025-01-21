@@ -40,7 +40,6 @@ void UApproachEnemyState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	PathFinding->FindPath(Start, Goal, OutPath);
 	if (OutPath.Num() == 0)
     {
-		FFastLogger::LogScreen(FColor::Red, TEXT("No Path Found!"));
 		return ;
     }
     else

@@ -27,6 +27,7 @@ void UShellDecalComponent::SpawnDecal(const FHitResult& HitResult, bool bHitTank
 {
 	FVector ImpactPoint = HitResult.ImpactPoint;
 	FVector ImpactNormal = HitResult.ImpactNormal;
+	
 	UPrimitiveComponent* HitComponent = HitResult.GetComponent();
 	FVector ReverseImpactNormal = ImpactNormal * -1;
 
@@ -41,14 +42,7 @@ void UShellDecalComponent::SpawnDecal(const FHitResult& HitResult, bool bHitTank
 	ShellDecalMaterial->SetScalarParameterValue(TEXT("Frame"), Frame);
 
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAttached(ShellDecalMaterial, DecalSize, HitComponent, NAME_None, ImpactPoint, DecalRotation, EAttachLocation::KeepWorldPosition, 20.0f);
-	if (!Decal)
-	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("Spawn Decal Failed"));
-	}
-	else
-	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("Spawn Decal Point: %s"), *ImpactPoint.ToString());
-	}
+	
 	Decal->SetFadeScreenSize(0.0f);
 	Decal->SetFadeOut(10.0f, 10.0f, false);
 }

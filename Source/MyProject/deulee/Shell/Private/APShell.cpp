@@ -34,9 +34,6 @@ void APShell::OnShellOverlapEvent(UPrimitiveComponent* OverlappedComponent, AAct
 	// TODO: Add Shell ID Enum
 	WrapShellDamageInfo();
 
-	FFastLogger::LogScreen(FColor::Cyan, TEXT("Component : %s"), *OtherComp->GetName());
-	FFastLogger::LogScreen(FColor::Cyan, TEXT("OtherActor : %s"), *OtherActor->GetName());
-	
 	// 인터페이스가 없거나 ShellTargetClass가 아닌 경우에는 데칼을 생성
 	if (!OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass())
 		|| !OtherActor->IsA(ShellTargetClass))

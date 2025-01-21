@@ -23,7 +23,6 @@ void URetreatingState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	AActor* PlayerActor = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerActor)
     {
-        FFastLogger::LogScreen(FColor::Red, TEXT("Player Not Found!"));
         check(false)
     }
 	FVector Player = PlayerActor->GetActorLocation();
@@ -64,7 +63,6 @@ void URetreatingState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	PathFinding->FindPath(Start, Goal, OutPath);
 	if (OutPath.Num() == 0)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("No Path Found!"));
 		return ;
 	}
 	else
