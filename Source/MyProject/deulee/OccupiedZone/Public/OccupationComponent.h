@@ -10,6 +10,7 @@ class UOccupationComponent : public UActorComponent
 	GENERATED_BODY()
 public:
 	UOccupationComponent();
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Occupation")
 	void StartOccupationDelayed();
@@ -17,7 +18,7 @@ public:
 	void StopOccupationDelayed();
 	UFUNCTION(BlueprintCallable, Category = "Occupation")
 	bool IsOccupyingAvailable();
-
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Occupation")
 	FTimerHandle OccupationTimerHandle;
