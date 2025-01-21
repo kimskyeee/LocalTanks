@@ -268,7 +268,7 @@ void ALightTankCharacter::Fire()
 	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName);
 
 	GunFirePSC->Activate(true);
-	ShockWavePSC->Activate(true);
+	// ShockWavePSC->Activate(true);
 }
 
 // Not Used
@@ -461,20 +461,33 @@ void ALightTankCharacter::InitComponents()
 
 void ALightTankCharacter::InitCollisionPreset()
 {
+	// Use Collision of Static Mesh Component
 	ParentBoxCollision->SetCollisionProfileName(TEXT("Enemy_Tank"));
 	BelowBodyCollision->SetCollisionProfileName(TEXT("Enemy_Tank"));
 	AboveBodyCollision->SetCollisionProfileName(TEXT("Enemy_Tank"));
 	GunCollision->SetCollisionProfileName(TEXT("Enemy_Tank"));
 	HPWidgetComponent->SetCollisionProfileName(TEXT("Enemy_Tank"));
+
+	ParentBoxCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BelowBodyCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AboveBodyCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GunCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	HPWidgetComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	
-	TrackLeft->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	TrackRight->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	ChassisLeft->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	ChassisRight->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	Turret->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	Hull->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	Gun->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+
+	// TrackLeft->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	// TrackRight->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	// ChassisLeft->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	// ChassisRight->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	// Turret->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	// Hull->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	// Gun->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	TrackLeft->SetCollisionProfileName(TEXT("Enemy_Tank"));
+	TrackRight->SetCollisionProfileName(TEXT("Enemy_Tank"));
+	ChassisLeft->SetCollisionProfileName(TEXT("Enemy_Tank"));
+	ChassisRight->SetCollisionProfileName(TEXT("Enemy_Tank"));
+	Turret->SetCollisionProfileName(TEXT("Enemy_Tank"));
+	Hull->SetCollisionProfileName(TEXT("Enemy_Tank"));
+	Gun->SetCollisionProfileName(TEXT("Enemy_Tank"));
 }
 
 void ALightTankCharacter::InitCamera()

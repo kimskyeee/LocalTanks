@@ -1,6 +1,7 @@
 #include "APShell.h"
 
 #include "FastLogger.h"
+#include "ShellDecalComponent.h"
 #include "UArmor.h"
 #include "Components/BoxComponent.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
@@ -39,10 +40,19 @@ void APShell::OnShellOverlapEvent(UPrimitiveComponent* OverlappedComponent, AAct
 	if (TankPawn)
 	{
 		TankPawn->TakeDamage_Implementation(DamageInfo);
+		ShellDecalComponent->SpawnDecal(SweepResult, true);
+	}
+	else
+	{
+		ShellDecalComponent->SpawnDecal(SweepResult, true);
 	}
 	
 	DeActive();
 	Armor->ReleaseShell(ShellInfo.ShellID, this);
+
+	FFastLogger::LogScreen(FColor::Red, TEXT("Shell Overlap!, Sweep Position: %s"), *SweepResult.ImpactPoint.ToString());
+	// Debug Draw
+	DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
 }
 
 void APShell::WrapShellDamageInfo()

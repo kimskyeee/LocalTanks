@@ -2,6 +2,7 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "ShellDecalComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -26,6 +27,7 @@ AShell::AShell()
 	}
 	BulletNS->SetCollisionResponseToChannels(ECR_Ignore);
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+	ShellDecalComponent = CreateDefaultSubobject<UShellDecalComponent>(TEXT("ShellDecalComponent"));
 }
 
 void AShell::BeginPlay()

@@ -55,5 +55,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	class UNiagaraComponent* BulletNS;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	class UShellDecalComponent* ShellDecalComponent;
 };
 
