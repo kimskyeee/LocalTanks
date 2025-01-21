@@ -25,3 +25,9 @@ bool UOccupationComponent::IsOccupyingAvailable()
 {
 	return bOccupyingAvailable;
 }
+
+void UOccupationComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	GetWorld()->GetTimerManager().ClearTimer(OccupationTimerHandle);
+}

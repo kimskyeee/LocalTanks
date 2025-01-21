@@ -239,6 +239,13 @@ EShellID ALightTankCharacter::GetShellID() const
 	return ShellID;
 }
 
+void ALightTankCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
+}
+
 bool ALightTankCharacter::IsReloadedShell()
 {
 	return bAvailableToFire;
