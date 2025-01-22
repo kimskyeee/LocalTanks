@@ -1,10 +1,11 @@
 #include "TankGameMode.h"
 
+#include "ALightTankCharacter.h"
 #include "FastLogger.h"
+#include "MyPawn.h"
 #include "Blueprint/UserWidget.h"
 #include "OccupiedZone.h"
 #include "OutcomeUI.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 ATankGameMode::ATankGameMode()
@@ -27,6 +28,78 @@ ATankGameMode::ATankGameMode()
 		AIWinnerWidgetClass = WBP_AIWinnerWidgetClass.Class;
 	}
 }
+
+void ATankGameMode::RespawnTank(AActor* DestroyedActor)
+{
+	if (!DestroyedActor) return;
+
+	UClass* DestroyedClass = DestroyedActor->GetClass();
+	FFastLogger::LogScreen(FColor::Red, TEXT("%s Destroyed"), *DestroyedClass->GetName());
+	APawn* SpawnActor = SpawnActorAtRandomPlace(DestroyedActor->GetClass());
+	if (!SpawnActor) return;
+
+	if (DestroyedClass == ALightTankCharacter::StaticClass())
+	{
+		AI_LightTanks.Remove(Cast<ALightTankCharacter>(DestroyedActor));
+		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActor));
+	}
+	else if (DestroyedClass == SkyTankClass)
+	{
+		AI_SkyTanks.Remove(Cast<AMyPawn>(DestroyedActor));
+		AI_SkyTanks.Add(Cast<AMyPawn>(SpawnActor));
+	}
+	else
+	{
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (PC)
+		{
+			PC->Possess(Cast<APawn>(SpawnActor));
+		}
+	}
+}
+
+APawn* ATankGameMode::SpawnActorAtRandomPlace(UClass* SpawnClass)
+{
+	// 1. X, Y 범위 설정
+	float RandomX = FMath::FRandRange(-15000.f, 15000.f);
+	float RandomY = FMath::FRandRange(-15000.f, 15000.f);
+
+	// Z값 초기화
+	float SpawnZ = 0.f;
+
+	// 2. Line Trace로 땅의 높이 확인
+	FVector StartPoint = FVector(RandomX, RandomY, 10000.f); // 위에서 시작
+	FVector EndPoint = FVector(RandomX, RandomY, -10000.f); // 아래로 쏘기
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // 자신의 충돌 무시
+
+	// 라인 트레이스 실행
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint, EndPoint, ECC_Visibility, Params))
+	{
+		// 땅의 Z 좌표를 가져옴
+		SpawnZ = HitResult.Location.Z;
+	}
+
+	// 3. Offset 추가
+	constexpr float Offset = 300.f;
+	SpawnZ += Offset;
+
+	// 4. 최종 위치 계산
+	FVector SpawnLocation = FVector(RandomX, RandomY, SpawnZ);
+
+	// 5. 액터 스폰
+	FTransform T{};
+	T.SetLocation(SpawnLocation);
+
+	APawn* SpawnPawn = GetWorld()->SpawnActor<APawn>(SpawnClass, T);
+	if (SpawnPawn)
+	{
+		SpawnPawn->AutoPossessPlayer = EAutoReceiveInput::Disabled;
+	}
+	return SpawnPawn;
+};
 
 void ATankGameMode::OnWinnerDetected(ETeam WinningTeam)
 {
@@ -57,4 +130,10 @@ void ATankGameMode::BeginPlay()
 
 	PlayerWinnerWidget = Cast<UOutcomeUI>(CreateWidget<UUserWidget>(GetWorld(), PlayerWinnerWidgetClass));
 	AIWinnerWidget = Cast<UOutcomeUI>(CreateWidget<UUserWidget>(GetWorld(), AIWinnerWidgetClass));
+
+	for (int i = 0; i < 2; i++)
+	{
+		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActorAtRandomPlace(ALightTankCharacter::StaticClass())));
+		AI_SkyTanks.Add(Cast<AMyPawn>(SpawnActorAtRandomPlace(SkyTankClass)));
+	}
 }
