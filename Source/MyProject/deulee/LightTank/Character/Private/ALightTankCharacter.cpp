@@ -8,6 +8,7 @@
 #include "OccupationComponent.h"
 #include "OccupiedZone.h"
 #include "SCGroundSensor.h"
+#include "TankGameMode.h"
 #include "UArmor.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
