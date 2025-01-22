@@ -41,7 +41,10 @@ protected:
 	TArray<class AMyPawn*> AI_SkyTanks;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TankGameMode")
-	TSubclassOf<AMyPawn> SkyTankClass;
+	TSubclassOf<class AMyPawn> SkyTankClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TankGameMode")
+	TSubclassOf<class ALightTankCharacter> AI_LightTankClass;
 	
 	UPROPERTY()
 	class AMk_TankPawn* PlayerTank;
