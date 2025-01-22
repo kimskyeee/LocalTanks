@@ -79,7 +79,6 @@ void AShell::DeActive()
 		ProjectileMovement->Deactivate();
 	}
 	SetActorLocation(FVector::ZeroVector);
-	// SetActorHiddenInGame(true);
 	BulletNS->SetVisibility(false);
 	bActive = false;
 }
@@ -92,7 +91,6 @@ void AShell::SetCollisionPreset(FName ProfileName)
 void AShell::Active()
 {
 	SetInitialVelocity();
-	// SetActorHiddenInGame(false);
 	BulletNS->SetVisibility(true);
 	bActive = true;
 }
