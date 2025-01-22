@@ -2,6 +2,7 @@
 
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
+#include "TankGameMode.h"
 
 void UDestroyedState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 {
@@ -10,6 +11,12 @@ void UDestroyedState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	// 탱크 소멸 처리
 	// 예: 리소스 정리, 장면에서 제거 등
 	Tank->SetActorHiddenInGame(true);
+
+	ATankGameMode* GameMode = Cast<ATankGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+    {
+        GameMode->RespawnTank(Tank);
+    }
 	Tank->Destroy();
 }
 
