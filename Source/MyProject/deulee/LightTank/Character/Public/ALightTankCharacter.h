@@ -14,7 +14,7 @@ class ALightTankCharacter : public AAITank, public IDamageInterface, public ITea
 	GENERATED_BODY()
 public:
 	ALightTankCharacter();
-	
+
 	/// 상태 전이에 필요한 조건 체크 함수들
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	bool IsEnemyInDetectionRange() const;
@@ -288,7 +288,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	float HP;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
-	float MaxHP = 1000;
+	float MaxHP = 200.0f;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	TSubclassOf<class UUserWidget> HPWidgetClass;

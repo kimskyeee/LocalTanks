@@ -42,6 +42,12 @@ void UShellDecalComponent::SpawnDecal(const FHitResult& HitResult, bool bHitTank
 	ShellDecalMaterial->SetScalarParameterValue(TEXT("Frame"), Frame);
 
 	UDecalComponent* Decal = UGameplayStatics::SpawnDecalAttached(ShellDecalMaterial, DecalSize, HitComponent, NAME_None, ImpactPoint, DecalRotation, EAttachLocation::KeepWorldPosition, 20.0f);
+
+	if (!IsValid(Decal))
+	{
+		FFastLogger::LogConsole(TEXT("Decal Create Failed"));
+		return;
+	}
 	
 	Decal->SetFadeScreenSize(0.0f);
 	Decal->SetFadeOut(10.0f, 10.0f, false);
