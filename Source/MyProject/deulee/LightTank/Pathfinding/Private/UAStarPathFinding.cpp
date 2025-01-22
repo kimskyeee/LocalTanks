@@ -62,7 +62,6 @@ void UAStarPathFinding::FindPath(FVector Start, FVector End, TArray<FVector>& Ou
 
 	if (StartNode == nullptr || EndNode == nullptr)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("StartNode or EndNode is nullptr"));
 		return;
 	}
 
@@ -240,7 +239,6 @@ FTileNode* UAStarPathFinding::GetTileNode(FVector Location)
 	int32 XIndex = Local.X / TileWidth;
 	if (YIndex < 0 || YIndex >= TileYCount || XIndex < 0 || XIndex >= TileXCount)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("Out of Range"));
 		return nullptr;
 	}
 	return &TileMap[YIndex][XIndex];

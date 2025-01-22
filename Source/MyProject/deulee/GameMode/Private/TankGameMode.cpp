@@ -30,8 +30,6 @@ ATankGameMode::ATankGameMode()
 
 void ATankGameMode::OnWinnerDetected(ETeam WinningTeam)
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("Winner Detected : %d"), (int)WinningTeam);
-
 	switch (WinningTeam)
 	{
 	case ETeam::Player:

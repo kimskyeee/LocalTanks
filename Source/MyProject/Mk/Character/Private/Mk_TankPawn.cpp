@@ -3,7 +3,10 @@
 
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
+#include "AITank.h"
+#include "FastLogger.h"
 #include "OccupationComponent.h"
+#include "UArmor.h"
 
 
 // Sets default values
@@ -13,6 +16,7 @@ AMk_TankPawn::AMk_TankPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OccupationComponent = CreateDefaultSubobject<UOccupationComponent>(TEXT("OccupationComponent"));
+	Armor = CreateDefaultSubobject<UArmor>(TEXT("Armor"));
 }
 
 // Called when the game starts or when spawned
@@ -58,5 +62,11 @@ bool AMk_TankPawn::IsDead_Implementation()
 bool AMk_TankPawn::IsPossibleToOccpupy_Implementation()
 {
 	return OccupationComponent->IsOccupyingAvailable();
+}
+
+void AMk_TankPawn::Fire(FVector ShellLocation, FRotator ShellRotation)
+{
+	ShellLocation += ShellRotation.Vector() * 650;
+	Armor->FireShell(ShellID, ShellLocation, ShellRotation, ShellProfileName, AAITank::StaticClass());
 }
 

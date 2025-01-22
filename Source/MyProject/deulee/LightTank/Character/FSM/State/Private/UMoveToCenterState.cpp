@@ -16,7 +16,6 @@ void UMoveToCenterState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 {
 	Super::Enter(Tank, FSM);
 
-	FFastLogger::LogScreen(FColor::Green, TEXT("Enter MoveToCenter State!"));
 	// 목표 위치 설정
 	// A* 알고리즘 들어갈곳
 	FVector Start = Tank->GetActorLocation();
@@ -31,7 +30,6 @@ void UMoveToCenterState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	PathFinding->FindPath(Start, Center, OutPath);
 	if (OutPath.Num() == 0)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("No Path Found!"));
 		return ;
 	}
 	else

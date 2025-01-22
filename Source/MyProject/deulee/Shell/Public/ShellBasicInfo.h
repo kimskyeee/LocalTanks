@@ -10,13 +10,13 @@ struct FShellBasicInfo
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
-	EShellID ShellID;
+	EShellID ShellID = EShellID::None;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
-	float ShellSpeed;
+	float ShellSpeed = 0.0f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
-	float ShellDamage;
+	float ShellDamage = 0.0f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
-	float Penetration;
+	float Penetration = 0.0f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
-	float ShellRadius;
+	float ShellRadius = 0.0f;
 };

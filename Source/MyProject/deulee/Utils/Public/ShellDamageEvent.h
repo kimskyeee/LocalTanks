@@ -14,11 +14,11 @@ public:
 	static const int32 ClassID = 101;
 
 	UPROPERTY(BlueprintReadWrite)
-	FVector ImpactLocation;
+	FVector ImpactLocation = FVector::ZeroVector;
 	UPROPERTY(BlueprintReadWrite)
-	FVector ImpactNormal;
+	FVector ImpactNormal = FVector::ZeroVector;
 	UPROPERTY(BlueprintReadWrite)
-	EShellID ShellID;
+	EShellID ShellID = EShellID::None;
 	UPROPERTY(BlueprintReadWrite)
-	FShellBasicInfo ShellInfo;
+	FShellBasicInfo ShellInfo = FShellBasicInfo();
 };

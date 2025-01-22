@@ -1,6 +1,7 @@
 #include "APShell.h"
 
 #include "FastLogger.h"
+#include "ShellDecalComponent.h"
 #include "UArmor.h"
 #include "Components/BoxComponent.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
@@ -31,18 +32,24 @@ void APShell::OnShellOverlapEvent(UPrimitiveComponent* OverlappedComponent, AAct
                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// TODO: Add Shell ID Enum
-	FFastLogger::LogScreen(FColor::Red, TEXT("Shell Overlap! : %s: %s"), *OtherActor->GetName(), *OtherComp->GetName());
 	WrapShellDamageInfo();
 
-	// TODO: Player면 공격 인터페이스 호출
-	AMk_TankPawn* TankPawn = Cast<AMk_TankPawn>(OtherActor);
-	if (TankPawn)
+	// 인터페이스가 없거나 ShellTargetClass가 아닌 경우에는 데칼을 생성
+	if (!OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass())
+		|| !OtherActor->IsA(ShellTargetClass))
 	{
-		TankPawn->TakeDamage_Implementation(DamageInfo);
+		ShellDecalComponent->SpawnDecal(SweepResult, false);
+	}
+	else
+	{
+		IDamageInterface::Execute_TakeDamage(OtherActor, DamageInfo);
+		ShellDecalComponent->SpawnDecal(SweepResult, true);
 	}
 	
 	DeActive();
 	Armor->ReleaseShell(ShellInfo.ShellID, this);
+	// Debug Draw
+	DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
 }
 
 void APShell::WrapShellDamageInfo()

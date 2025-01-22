@@ -2,6 +2,7 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "ShellDecalComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -12,7 +13,7 @@ AShell::AShell()
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	SetRootComponent(Collision);
 	Collision->SetMobility(EComponentMobility::Movable);
-	Collision->SetBoxExtent({600, 30, 30});
+	Collision->SetBoxExtent({30, 30, 30});
 
 	BulletNS = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BulletNS"));
 	BulletNS->SetupAttachment(Collision);
@@ -26,6 +27,7 @@ AShell::AShell()
 	}
 	BulletNS->SetCollisionResponseToChannels(ECR_Ignore);
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+	ShellDecalComponent = CreateDefaultSubobject<UShellDecalComponent>(TEXT("ShellDecalComponent"));
 }
 
 void AShell::BeginPlay()
@@ -110,4 +112,9 @@ void AShell::SetInitialVelocity()
         ProjectileMovement->SetUpdatedComponent(Collision);
         ProjectileMovement->Activate(true);
 	}
+}
+
+void AShell::SetTarget(class UClass* TargetClass)
+{
+	ShellTargetClass = TargetClass;
 }

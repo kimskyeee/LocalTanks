@@ -23,9 +23,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	UTankState* GetPrevState();
 	
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	ETankStateID GetNextState();
-
 protected:
 	void InitStatePool();
 
@@ -37,9 +34,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank State")
 	UTankState* PrevState;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank State")
-	ETankStateID NextState;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank State")
 	TMap<ETankStateID, UTankState*> StatePool;

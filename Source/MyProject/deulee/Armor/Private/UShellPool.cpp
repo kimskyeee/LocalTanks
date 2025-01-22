@@ -4,6 +4,7 @@
 #include "FastLogger.h"
 #include "ShellLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "UObject/GarbageCollectionSchema.h"
 
 UShellPool::UShellPool()
 {
@@ -24,7 +25,7 @@ AShell* UShellPool::AcquireShell(EShellID ShellID, UArmor* ArmorRef)
 	{
 		Pool.Add(ShellID, FShellArray());
 	}
-	
+
 	AShell* Shell = GetWorld()->SpawnActor<AShell>(UShellLibrary::GetShellClass(ShellID));
 	if (!Shell)
 	{
