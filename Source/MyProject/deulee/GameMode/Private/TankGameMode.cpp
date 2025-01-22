@@ -38,7 +38,7 @@ void ATankGameMode::RespawnTank(AActor* DestroyedActor)
 	APawn* SpawnActor = SpawnActorAtRandomPlace(DestroyedActor->GetClass());
 	if (!SpawnActor) return;
 
-	if (DestroyedClass == ALightTankCharacter::StaticClass())
+	if (DestroyedClass == AI_LightTankClass)
 	{
 		AI_LightTanks.Remove(Cast<ALightTankCharacter>(DestroyedActor));
 		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActor));
@@ -133,7 +133,7 @@ void ATankGameMode::BeginPlay()
 
 	for (int i = 0; i < 2; i++)
 	{
-		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActorAtRandomPlace(ALightTankCharacter::StaticClass())));
+		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActorAtRandomPlace(AI_LightTankClass)));
 		AI_SkyTanks.Add(Cast<AMyPawn>(SpawnActorAtRandomPlace(SkyTankClass)));
 	}
 }
