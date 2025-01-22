@@ -1,9 +1,12 @@
 #include "APShell.h"
 
 #include "FastLogger.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "ShellDecalComponent.h"
 #include "UArmor.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
 APShell::APShell()
@@ -19,6 +22,21 @@ void APShell::BeginPlay()
 {
 	Super::BeginPlay();
 
+	for (int32 i = 0; i < ExplosionPoolSize; i++)
+	{
+		UNiagaraComponent* ExplosionNS = NewObject<UNiagaraComponent>(this, UNiagaraComponent::StaticClass());
+		ExplosionNS->SetupAttachment(Collision);
+		ExplosionNS->SetAsset(ExplosionNSAsset);
+		ExplosionNS->SetAutoActivate(false);
+		ExplosionNS->RegisterComponent();
+		ExplosionNS->Deactivate();
+		ExplosionNSPool.Add(ExplosionNS);
+	}
+	for (int32 i = 0; i < ExplosionPoolSize; i++)
+	{
+		FTimerHandle TimerHandle;
+		ExplosionTimerHandles.Add(TimerHandle);
+	}
 	DeActive();
 }
 
@@ -45,6 +63,8 @@ void APShell::OnShellOverlapEvent(UPrimitiveComponent* OverlappedComponent, AAct
 		IDamageInterface::Execute_TakeDamage(OtherActor, DamageInfo);
 		ShellDecalComponent->SpawnDecal(SweepResult, true);
 	}
+
+	SpawnExplodeEffect(SweepResult);
 	
 	DeActive();
 	Armor->ReleaseShell(ShellInfo.ShellID, this);
@@ -54,15 +74,79 @@ void APShell::OnShellOverlapEvent(UPrimitiveComponent* OverlappedComponent, AAct
 
 void APShell::WrapShellDamageInfo()
 {
-	// ShellDamageEvent.ImpactLocation = GetActorLocation();
-	// ShellDamageEvent.ImpactNormal = GetActorForwardVector() * -1; // 방향이 반대로 들어가야 함
-	// ShellDamageEvent.ShellID = ShellInfo.ShellID;
-	// ShellDamageEvent.ShellInfo = ShellInfo;
-
-	// TODO: Beta: 이 부분에 이제 공격을 받았을 때 필요한 로직을 적어야 함.
-	DamageInfo.DamageLocation = GetActorLocation();
 	DamageInfo.ImpactNormal = GetActorForwardVector() * -1;
 	DamageInfo.ShellBasicInfo = ShellInfo;
 	DamageInfo.bAbove = false;
 	DamageInfo.ImpactDistance = 0.0f;
+}
+
+void APShell::SpawnExplodeEffect(const FHitResult& HitResult)
+{
+	FVector ImpactPoint = HitResult.ImpactPoint;
+	FRotator ImpactNormalRotator = UKismetMathLibrary::MakeRotFromX(HitResult.ImpactNormal);
+
+	if (ImpactPoint.IsZero())
+	{
+		return ;
+	}
+	
+	// 풀에서 사용 가능한 이펙트를 가져옴
+	int32 Index = 0;
+	UNiagaraComponent* NiagaraComp = nullptr;
+	for (UNiagaraComponent* Effect : ExplosionNSPool)
+	{
+		if (!Effect->IsActive())
+		{
+			NiagaraComp = Effect;
+			break;
+		}
+		Index++;
+	}
+
+	if (NiagaraComp)
+	{
+		// 일시적으로 Detach함
+		NiagaraComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		
+		// 이펙트 위치 및 회전 설정
+		NiagaraComp->SetUsingAbsoluteLocation(true);
+		NiagaraComp->SetUsingAbsoluteRotation(true);
+		NiagaraComp->SetUsingAbsoluteScale(true);
+		
+		NiagaraComp->SetWorldLocation(ImpactPoint);
+		NiagaraComp->SetWorldRotation(ImpactNormalRotator);
+
+		// 이펙트 활성화
+		NiagaraComp->Activate(true);
+
+		// 2초후 비활성화
+		TWeakObjectPtr<UNiagaraComponent> WeakNiagaraComp = NiagaraComp;
+		TWeakObjectPtr<APShell> WeakThis = this;
+		GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandles[Index], [WeakNiagaraComp, WeakThis, Index]()
+		{
+			if (!(WeakNiagaraComp.IsValid() && WeakThis.IsValid()))
+			{
+				return ;
+			}
+			APShell* Shell = WeakThis.Get();
+			Shell->ReleaseNiagaraEffect(WeakNiagaraComp.Get(), Shell, Index);
+		}, 0.5f, false);
+	}
+}
+
+void APShell::ReleaseNiagaraEffect(UNiagaraComponent* NiagaraComp, APShell* Shell, int32 Index)
+{
+	// 이펙트 비활성화
+	NiagaraComp->Deactivate();
+
+	// 다시 셸의 Collision 컴포넌트에 Attach
+	NiagaraComp->AttachToComponent(
+		this->Collision,
+		FAttachmentTransformRules::KeepRelativeTransform
+	);
+
+	// 상대 좌표 모드로 복귀
+	NiagaraComp->SetUsingAbsoluteLocation(false);
+	NiagaraComp->SetUsingAbsoluteRotation(false);
+	NiagaraComp->SetUsingAbsoluteScale(false);
 }

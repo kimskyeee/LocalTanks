@@ -1,5 +1,6 @@
 #include "AShell.h"
 
+#include "FastLogger.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "ShellDecalComponent.h"
@@ -28,6 +29,13 @@ AShell::AShell()
 	BulletNS->SetCollisionResponseToChannels(ECR_Ignore);
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ShellDecalComponent = CreateDefaultSubobject<UShellDecalComponent>(TEXT("ShellDecalComponent"));
+
+	const ConstructorHelpers::FObjectFinder<UNiagaraSystem> NS_Explosion
+	(TEXT("/Game/MsvFx_Niagara_Explosion_Pack_01/Prefabs/Niagara_Explosion_02.Niagara_Explosion_02"));
+	if (NS_Explosion.Succeeded())
+	{
+		ExplosionNSAsset = NS_Explosion.Object;
+	}
 }
 
 void AShell::BeginPlay()
@@ -45,15 +53,6 @@ void AShell::Tick(float DeltaTime)
 	{
 		return ;
 	}
-
-	// FVector Gravity = FVector(0, 0, -980);
-	// // 1) 먼저 속도부터 갱신
-	// CurrentVelocity += Gravity * DeltaTime;
-	//
-	// // 2) 그 속도로 위치 이동
-	// FVector P0 = GetActorLocation();
-	// FVector NewP = P0 + CurrentVelocity * DeltaTime;
-	// SetActorLocation(NewP);
 }
 
 void AShell::SetShellInfo(FShellBasicInfo ShellInfo_)
@@ -80,7 +79,8 @@ void AShell::DeActive()
 		ProjectileMovement->Deactivate();
 	}
 	SetActorLocation(FVector::ZeroVector);
-	SetActorHiddenInGame(true);
+	// SetActorHiddenInGame(true);
+	BulletNS->SetVisibility(false);
 	bActive = false;
 }
 
@@ -92,7 +92,8 @@ void AShell::SetCollisionPreset(FName ProfileName)
 void AShell::Active()
 {
 	SetInitialVelocity();
-	SetActorHiddenInGame(false);
+	// SetActorHiddenInGame(false);
+	BulletNS->SetVisibility(true);
 	bActive = true;
 }
 

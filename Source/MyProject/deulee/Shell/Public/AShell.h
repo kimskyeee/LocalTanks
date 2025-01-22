@@ -14,6 +14,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Shell")
 	void SetShellInfo(FShellBasicInfo ShellInfo);
@@ -62,6 +63,30 @@ protected:
 	class UShellDecalComponent* ShellDecalComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	TArray<UNiagaraComponent*> ExplosionNSPool;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	TArray<FTimerHandle> ExplosionTimerHandles;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	class UNiagaraSystem* ExplosionNSAsset;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	TSubclassOf<class AActor> ShellTargetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	int32 ExplosionPoolSize = 10;
+
+	
 };
+
+inline void AShell::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	for (int32 i = 0; i < ExplosionPoolSize; i++)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandles[i]);
+	}
+}
 
