@@ -23,6 +23,8 @@ public:
 	void SetArmor(class UArmor* Armor);
 	UFUNCTION(BlueprintCallable, Category = "Shell")
 	void SetInitialVelocity();
+	UFUNCTION(BlueprintCallable, Category = "Shell")
+	void SetTarget(class UClass* TargetClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Shell")
 	void Active();
@@ -55,5 +57,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	class UNiagaraComponent* BulletNS;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	class UShellDecalComponent* ShellDecalComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	TSubclassOf<class AActor> ShellTargetClass;
 };
 

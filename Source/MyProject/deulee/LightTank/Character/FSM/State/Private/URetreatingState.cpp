@@ -18,14 +18,11 @@ void URetreatingState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 {
 	Super::Enter(Tank, FSM);
 
-	FFastLogger::LogScreen(FColor::Green, TEXT("Enter Retreating State!"));
-
 	// 적에게 일정 거리 안에 들어가기 위한 목표 설정
 	FVector Start = Tank->GetActorLocation();
 	AActor* PlayerActor = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerActor)
     {
-        FFastLogger::LogScreen(FColor::Red, TEXT("Player Not Found!"));
         check(false)
     }
 	FVector Player = PlayerActor->GetActorLocation();
@@ -66,7 +63,6 @@ void URetreatingState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	PathFinding->FindPath(Start, Goal, OutPath);
 	if (OutPath.Num() == 0)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("No Path Found!"));
 		return ;
 	}
 	else

@@ -12,8 +12,6 @@ void UAttackEnemyState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 
 	// 공격 로직 (포탄 발사, 타이머 초기화)
 	// 앞에서 Bool 체크를 해서 공격이 가능한 상태인지 확인 못하면 공격을 못하게 막아야함
-	FFastLogger::LogScreen(FColor::Red, TEXT("Enter Attack State!"));
-
 	Tank->Fire();
 }
 

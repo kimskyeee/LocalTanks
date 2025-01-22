@@ -9,7 +9,6 @@ void UDestroyedState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 
 	// 탱크 소멸 처리
 	// 예: 리소스 정리, 장면에서 제거 등
-	FFastLogger::LogScreen(FColor::Cyan, TEXT("Enter Destroyed State!"));
 	Tank->SetActorHiddenInGame(true);
 	Tank->Destroy();
 }

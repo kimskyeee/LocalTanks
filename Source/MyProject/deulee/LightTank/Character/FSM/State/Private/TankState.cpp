@@ -4,5 +4,10 @@
 
 UTankState::UTankState()
 {
-	PathFinding = CreateDefaultSubobject<UAStarPathFinding>(TEXT("PathFinding"));
+	// PathFinding = CreateDefaultSubject<UAStarPathFinding>(TEXT("PathFinding"));
+}
+
+void UTankState::Initialize()
+{
+	PathFinding = NewObject<UAStarPathFinding>(this, UAStarPathFinding::StaticClass());
 }

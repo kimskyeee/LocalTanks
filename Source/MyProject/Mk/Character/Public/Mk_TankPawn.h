@@ -36,7 +36,19 @@ public:
 
 	virtual ETeam GetTeam_Implementation() const override { return ETeam::Player; }
 
+	UFUNCTION(BlueprintCallable, Category = "Mk_TankPawn")
+	void Fire(FVector ShellLocation, FRotator ShellRotation);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
 	class UOccupationComponent* OccupationComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
+	class UArmor* Armor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
+	EShellID ShellID = EShellID::Pzgr39;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	FName ShellProfileName = TEXT("Player_Missile");
 };

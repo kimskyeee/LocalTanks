@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AITank.h"
 #include "DamageInterface.h"
 #include "EShellID.h"
 #include "TeamInterface.h"
@@ -8,7 +9,7 @@
 #include "ALightTankCharacter.generated.h"
 
 UCLASS()
-class ALightTankCharacter : public APawn, public IDamageInterface, public ITeamInterface
+class ALightTankCharacter : public AAITank, public IDamageInterface, public ITeamInterface
 {
 	GENERATED_BODY()
 public:
@@ -84,19 +85,13 @@ public:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	/// 데미지 전달 함수
-	// UFUNCTION(BlueprintCallable, Category = "Tank State")
-	// virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	float TakeDamageCalledByBP(struct FMyDamageStructure DamageInfo, class AController* EventInstigator, AActor* DamageCauser);
-
 	/// IDamageInterface 구현
 	virtual bool IsPossibleToOccpupy_Implementation() override;
 	virtual ETeam GetTeam_Implementation() const override {return ETeam::AI;};
+	virtual bool TakeDamage_Implementation(FMyDamageStructure DamageInfo) override;
 	// NOT USED
 	virtual float GetCurrentHealth_Implementation() override {return HP;}
 	virtual float GetMaxHealth_Implementation() override {return MaxHP;};
-	virtual bool TakeDamage_Implementation(FMyDamageStructure DamageInfo) override {return false;};
 	virtual bool IsDead_Implementation() override {return HP <= 0;};
 	
 protected:

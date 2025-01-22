@@ -13,16 +13,16 @@ struct FMyDamageStructure
 	FShellBasicInfo ShellBasicInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector DamageLocation;
+	FVector DamageLocation = FVector::ZeroVector;
 
 	// bool bAbove
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bAbove;
+	bool bAbove = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector ImpactNormal;
+	FVector ImpactNormal = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ImpactDistance;
+	float ImpactDistance = 0.0f;
 	
 };

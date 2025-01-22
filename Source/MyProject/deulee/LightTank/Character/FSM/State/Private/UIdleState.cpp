@@ -11,8 +11,6 @@ void UIdleState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	// 중앙(목표 지점)에 도착한 상태
 	// 이동을 멈추고 대기 상태로 전환
 	// 이동 명령을 멈추는 로직
-
-	FFastLogger::LogScreen(FColor::Green, TEXT("Enter Idle State!"));
 }
 
 /*

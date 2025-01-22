@@ -2,21 +2,28 @@
 
 #include "UShellPool.h"
 #include "AShell.h"
+#include "FastLogger.h"
 
 UArmor::UArmor()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
-	ShellPool = CreateDefaultSubobject<UShellPool>(TEXT("ShellPool"));
 }
 
-void UArmor::FireShell(EShellID ShellID, FVector Location, FRotator Rotation, FName ProfileName)
+void UArmor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ShellPool = NewObject<UShellPool>(this, UShellPool::StaticClass());
+}
+
+void UArmor::FireShell(EShellID ShellID, FVector Location, FRotator Rotation, FName ProfileName, UClass* TargetClass)
 {
 	AShell* Shell = ShellPool->AcquireShell(ShellID, this);
 	if (!Shell)
 	{
 		return ;
 	}
+	Shell->SetTarget(TargetClass);
 	Shell->SetActorLocation(Location);
 	Shell->SetActorRotation(Rotation);
 	Shell->SetCollisionPreset(ProfileName);
