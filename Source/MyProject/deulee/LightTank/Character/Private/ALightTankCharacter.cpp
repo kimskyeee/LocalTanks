@@ -65,6 +65,7 @@ void ALightTankCharacter::Tick(float DeltaTime)
 	UpdateMovement(DeltaTime);
 	UpdateTurret(DeltaTime);
 	UpdateGun(DeltaTime);
+	ActiveWheelDust();
 }
 
 bool ALightTankCharacter::IsEnemyInDetectionRange() const
@@ -258,7 +259,7 @@ void ALightTankCharacter::Fire()
 		}
 	}), ReloadTime, false);
 	FVector ShellLocation = GunMuzzle->GetComponentLocation();
-	ShellLocation += GunMuzzle->GetForwardVector() * 650;
+	// ShellLocation += GunMuzzle->GetForwardVector() * 650;
 	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName, AMk_TankPawn::StaticClass());
 	GunFirePSC->Activate(true);
 }
@@ -425,6 +426,31 @@ void ALightTankCharacter::InitComponents()
 	ShockWavePSC->SetWorldScale3D({0.5, 0.5, 0.5});
 	ShockWavePSC->SetTemplate(ShockWaveVFX);
 	ShockWavePSC->bAutoActivate = false;
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_WheelDustVFX
+	(TEXT("/Game/VigilanteContent/Vehicles/West_Tank_M1A1Abrams/FX/PS_Dust_WheelTrack_M1A1Abrams.PS_Dust_WheelTrack_M1A1Abrams"));
+	if (P_WheelDustVFX.Succeeded())
+	{
+		WheelDustVFX = P_WheelDustVFX.Object;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		UParticleSystemComponent* WheelDustPSC = CreateDefaultSubobject<UParticleSystemComponent>(FName(*FString::Printf(TEXT("WheelDustPSC_%d"), i)));
+		WheelDustPSC->SetupAttachment(BelowBodyCollision);
+		WheelDustPSC->SetTemplate(WheelDustVFX);
+		WheelDustPSC->bAutoActivate = false;
+		WheelDustPSCArray.Add(WheelDustPSC);
+	}
+	// WheelDustPSCArray
+	WheelDustPSCArray[0]->SetRelativeLocation({100, 120, -70});
+	WheelDustPSCArray[1]->SetRelativeLocation({-100, 120, -70});
+	WheelDustPSCArray[2]->SetRelativeLocation({100, -120, -70});
+	WheelDustPSCArray[3]->SetRelativeLocation({-100, -120, -70});
+	WheelDustPSCArray[0]->SetRelativeRotation({0, 90, 0});
+	WheelDustPSCArray[1]->SetRelativeRotation({0, 90, 0});
+	WheelDustPSCArray[2]->SetRelativeRotation({0, 90, 0});
+	WheelDustPSCArray[3]->SetRelativeRotation({0, 90, 0});
 }
 
 void ALightTankCharacter::InitCollisionPreset()
@@ -554,6 +580,27 @@ void ALightTankCharacter::SetWidget()
 		{
 			HPWidgetComponent->SetMaterial(0, HPBarMaterial);
 		}
+	}
+}
+
+void ALightTankCharacter::ActiveWheelDust()
+{
+	// CurrentForwardSpeed에 따라 WheelDustPSCArray의 활성화 여부를 결정 (속도가 빠를수록 활성화)
+	float SpeedRatio = FMath::Clamp(FMath::Abs(CurrentForwardSpeed) / MaxForwardSpeed, 0.0f, 1.0f);
+
+	constexpr float MaxDustScale = 4.0f;
+	float DustIntensity = SpeedRatio * MaxDustScale;
+
+	for (auto WheelDustPSC : WheelDustPSCArray)
+	{
+		// 우선 파티클이 꺼져 있을 수 있으므로 활성화
+		if (WheelDustPSC && !WheelDustPSC->IsActive())
+		{
+			WheelDustPSC->Activate(true);
+		}
+    
+		// 만약 파티클 자체를 스케일링하고 싶다면 (파티클 시스템의 전체 크기):
+		WheelDustPSC->SetWorldScale3D(FVector(DustIntensity));
 	}
 }
 

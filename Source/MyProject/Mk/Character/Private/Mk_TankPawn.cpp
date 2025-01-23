@@ -66,7 +66,6 @@ bool AMk_TankPawn::IsPossibleToOccpupy_Implementation()
 
 void AMk_TankPawn::Fire(FVector ShellLocation, FRotator ShellRotation)
 {
-	ShellLocation += ShellRotation.Vector() * 650;
 	Armor->FireShell(ShellID, ShellLocation, ShellRotation, ShellProfileName, AAITank::StaticClass());
 }
 

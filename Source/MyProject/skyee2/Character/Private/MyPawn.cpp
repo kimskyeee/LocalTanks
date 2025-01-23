@@ -2,6 +2,7 @@
 
 #include "MyPawn.h"
 
+#include "FastLogger.h"
 #include "OccupationComponent.h"
 #include "UArmor.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
@@ -17,7 +18,6 @@ AMyPawn::AMyPawn()
 
 void AMyPawn::Fire(FVector ShellLocation, FRotator ShellRotation)
 {
-	ShellLocation += ShellRotation.Vector() * 650;
 	Armor->FireShell(ShellID, ShellLocation, ShellRotation, ShellProfileName, AMk_TankPawn::StaticClass());
 }
 
@@ -48,6 +48,7 @@ float AMyPawn::GetMaxHealth_Implementation()
 
 bool AMyPawn::TakeDamage_Implementation(FMyDamageStructure DamageInfo)
 {
+	FFastLogger::LogScreen(FColor::Red, TEXT("AMyPawn::TakeDamage_Implementation"));
 	OccupationComponent->StartOccupationDelayed();
 	return IDamageInterface::TakeDamage_Implementation(DamageInfo);
 }
