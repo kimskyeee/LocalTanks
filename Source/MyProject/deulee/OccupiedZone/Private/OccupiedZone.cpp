@@ -174,9 +174,17 @@ void AOccupiedZone::UpdateCaptureProgress(float DeltaSeconds)
 		CaptureProgress = 0;
 		OccupyUI->OProgressReset();
 	}
+	
 	int32 Sign = ControllingTeam == ETeam::Player ? 1 : ControllingTeam == ETeam::None ? 0 : -1;
 	CaptureProgress += CaptureRate * DeltaSeconds * Sign;
 	CaptureProgress = FMath::Clamp(CaptureProgress, -100.f, 100.f);
+
+	if (Sign == 0)
+	{
+		// 천천히 줄어듬 (절대값 기준으로 0이 될 때까지)
+		CaptureProgress += CaptureRate * DeltaSeconds * FMath::Sign(CaptureProgress) * -1;
+		CaptureProgress = FMath::Abs(CaptureProgress) < 0.1f ? 0 : CaptureProgress;
+	}
 
 	constexpr float MaxCaptureProgress = 100;
 
@@ -189,6 +197,15 @@ void AOccupiedZone::UpdateCaptureProgress(float DeltaSeconds)
 		OccupyUI->OProgressBarRed(FMath::Abs(CaptureProgress), MaxCaptureProgress);
 		break;
 	default:
+		// 현재 점령 중인 팀이 없는 경우 이전의 팀에 따라서 색을 칠함
+		if (PrevTeam == ETeam::Player)
+		{
+			OccupyUI->OProgressBarGreen(CaptureProgress, MaxCaptureProgress);
+		}
+		else if (PrevTeam == ETeam::AI)
+		{
+			OccupyUI->OProgressBarRed(FMath::Abs(CaptureProgress), MaxCaptureProgress);
+		}
 		break;
 	}
 }
