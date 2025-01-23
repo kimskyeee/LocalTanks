@@ -107,6 +107,7 @@ protected:
 	void InitGroundSensor();
 	void InitWidget();
 	void SetWidget();
+	void ActiveWheelDust();
 
 	// Goal Queue에 있는 Goal을 하나씩 빼서 처리하는 함수
 	void HandleGoal();
@@ -309,9 +310,14 @@ protected:
 	class UParticleSystem* GunFireVFX;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	class UParticleSystem* ShockWaveVFX;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	class UParticleSystem* WheelDustVFX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	class UParticleSystemComponent* GunFirePSC;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	class UParticleSystemComponent* ShockWavePSC;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	TArray<class UParticleSystemComponent*> WheelDustPSCArray;
 };
