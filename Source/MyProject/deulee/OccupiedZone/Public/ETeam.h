@@ -9,4 +9,5 @@ enum class ETeam : uint8
 	None = 0,
 	Player = 1,
 	AI = 2,
+	Attack = 3,
 };
