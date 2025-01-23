@@ -15,7 +15,7 @@ AShell::AShell()
 	SetRootComponent(Collision);
 	Collision->SetMobility(EComponentMobility::Movable);
 	Collision->SetBoxExtent({30, 30, 30});
-
+	
 	BulletNS = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BulletNS"));
 	BulletNS->SetupAttachment(Collision);
 	BulletNS->SetMobility(EComponentMobility::Movable);
@@ -48,11 +48,6 @@ void AShell::BeginPlay()
 void AShell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (!bActive)
-	{
-		return ;
-	}
 }
 
 void AShell::SetShellInfo(FShellBasicInfo ShellInfo_)
@@ -72,6 +67,10 @@ void AShell::SetArmor(UArmor* Armor_)
 
 void AShell::DeActive()
 {
+	if (GetWorld()->GetTimerManager().IsTimerActive(DeActiveTimerHandle))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DeActiveTimerHandle);
+	}
 	Collision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	if (ProjectileMovement)
 	{
@@ -80,7 +79,6 @@ void AShell::DeActive()
 	}
 	SetActorLocation(FVector::ZeroVector);
 	BulletNS->SetVisibility(false);
-	bActive = false;
 }
 
 void AShell::SetCollisionPreset(FName ProfileName)
@@ -92,7 +90,9 @@ void AShell::Active()
 {
 	SetInitialVelocity();
 	BulletNS->SetVisibility(true);
-	bActive = true;
+	bCollisionActive = false;
+	// 5초후 비활성화
+	GetWorld()->GetTimerManager().SetTimer(DeActiveTimerHandle, this, &AShell::DeActive, 5.0f, false);
 }
 
 void AShell::SetInitialVelocity()
@@ -116,4 +116,14 @@ void AShell::SetInitialVelocity()
 void AShell::SetTarget(class UClass* TargetClass)
 {
 	ShellTargetClass = TargetClass;
+}
+
+void AShell::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	for (int32 i = 0; i < ExplosionPoolSize; i++)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandles[i]);
+	}
 }

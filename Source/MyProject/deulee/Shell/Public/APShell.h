@@ -22,7 +22,10 @@ public:
 	UFUNCTION(Blueprintable, Category = "Shell")
 	void ReleaseNiagaraEffect(UNiagaraComponent* NiagaraComp, APShell* Shell, int32 Index);
 
+	virtual void HitScanShot(const FHitResult& HitResult) override;
+
 private:
+	void ProcessShellAttack(AActor* OtherActor, const FHitResult& SweepResult);
 	void WrapShellDamageInfo();
 	void SpawnExplodeEffect(const FHitResult& HitResult);
 

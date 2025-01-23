@@ -22,6 +22,11 @@ public:
 	void ReleaseShell(EShellID ShellID, AShell* Shell);
 
 protected:
+	UFUNCTION(BlueprintCallable, Category = "Armor")
+	void ProjectileShot(EShellID ShellID, FVector Location, FRotator Rotation, FName ProfileName, UClass* TargetClass);
+	UFUNCTION(BlueprintCallable, Category = "Armor")
+	void HitscanShot(EShellID ShellID, const FHitResult& HitResult, UClass* TargetClass);
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Armor")
 	class UShellPool* ShellPool;
 };

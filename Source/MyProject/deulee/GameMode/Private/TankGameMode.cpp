@@ -83,7 +83,7 @@ APawn* ATankGameMode::SpawnActorAtRandomPlace(UClass* SpawnClass)
 	}
 
 	// 3. Offset 추가
-	constexpr float Offset = 300.f;
+	constexpr float Offset = 700.f;
 	SpawnZ += Offset;
 
 	// 4. 최종 위치 계산

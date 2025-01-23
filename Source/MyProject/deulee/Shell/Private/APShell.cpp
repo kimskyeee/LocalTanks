@@ -49,27 +49,7 @@ void APShell::Tick(float DeltaTime)
 void APShell::OnShellOverlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// TODO: Add Shell ID Enum
-	WrapShellDamageInfo();
-
-	// 인터페이스가 없거나 ShellTargetClass가 아닌 경우에는 데칼을 생성
-	if (!OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass())
-		|| !OtherActor->IsA(ShellTargetClass))
-	{
-		ShellDecalComponent->SpawnDecal(SweepResult, false);
-	}
-	else
-	{
-		IDamageInterface::Execute_TakeDamage(OtherActor, DamageInfo);
-		ShellDecalComponent->SpawnDecal(SweepResult, true);
-	}
-
-	SpawnExplodeEffect(SweepResult);
-	
-	DeActive();
-	Armor->ReleaseShell(ShellInfo.ShellID, this);
-	// Debug Draw
-	DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
+	ProcessShellAttack(OtherActor, SweepResult);
 }
 
 void APShell::WrapShellDamageInfo()
@@ -85,11 +65,6 @@ void APShell::SpawnExplodeEffect(const FHitResult& HitResult)
 	FVector ImpactPoint = HitResult.ImpactPoint;
 	FRotator ImpactNormalRotator = UKismetMathLibrary::MakeRotFromX(HitResult.ImpactNormal);
 
-	if (ImpactPoint.IsZero())
-	{
-		return ;
-	}
-	
 	// 풀에서 사용 가능한 이펙트를 가져옴
 	int32 Index = 0;
 	UNiagaraComponent* NiagaraComp = nullptr;
@@ -149,4 +124,36 @@ void APShell::ReleaseNiagaraEffect(UNiagaraComponent* NiagaraComp, APShell* Shel
 	NiagaraComp->SetUsingAbsoluteLocation(false);
 	NiagaraComp->SetUsingAbsoluteRotation(false);
 	NiagaraComp->SetUsingAbsoluteScale(false);
+}
+
+void APShell::HitScanShot(const FHitResult& HitResult)
+{
+	Super::HitScanShot(HitResult);
+
+	ProcessShellAttack(HitResult.GetActor(), HitResult);
+}
+
+void APShell::ProcessShellAttack(AActor* OtherActor, const FHitResult& SweepResult)
+{
+	// TODO: Add Shell ID Enum
+	WrapShellDamageInfo();
+
+	// 인터페이스가 없거나 ShellTargetClass가 아닌 경우에는 데칼을 생성
+	if (!OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass())
+		|| !OtherActor->IsA(ShellTargetClass))
+	{
+		ShellDecalComponent->SpawnDecal(SweepResult, false);
+	}
+	else
+	{
+		IDamageInterface::Execute_TakeDamage(OtherActor, DamageInfo);
+		ShellDecalComponent->SpawnDecal(SweepResult, true);
+	}
+
+	SpawnExplodeEffect(SweepResult);
+	
+	DeActive();
+	Armor->ReleaseShell(ShellInfo.ShellID, this);
+	// Debug Draw
+	DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
 }

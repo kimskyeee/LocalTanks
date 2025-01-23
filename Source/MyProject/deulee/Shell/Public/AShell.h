@@ -35,8 +35,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shell")
 	void SetCollisionPreset(FName ProfileName);
 	
-	virtual ~AShell() override {}
+	UFUNCTION(Blueprintable, Category = "Shell")
+	virtual void HitScanShot(const FHitResult& HitResult){};
 	
+	virtual ~AShell() override {}
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	class UArmor* Armor;
@@ -47,9 +50,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	FShellBasicInfo ShellInfo;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
-	bool bActive;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	FVector CurrentVelocity;
 
@@ -77,16 +77,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
 	int32 ExplosionPoolSize = 10;
 
-	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Shell")
+	FTimerHandle DeActiveTimerHandle;
+
+	UPROPERTY()
+	bool bCollisionActive = false;
 };
-
-inline void AShell::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	for (int32 i = 0; i < ExplosionPoolSize; i++)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandles[i]);
-	}
-}
-
