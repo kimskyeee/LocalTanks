@@ -5,6 +5,7 @@
 #include "FastLogger.h"
 #include "HPWidget.h"
 #include "MyDamageStructure.h"
+#include "NiagaraComponent.h"
 #include "OccupationComponent.h"
 #include "OccupiedZone.h"
 #include "SCGroundSensor.h"
@@ -20,6 +21,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 #include "Particles/ParticleSystem.h"
+#include "NiagaraSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 
 ALightTankCharacter::ALightTankCharacter()
@@ -66,6 +68,7 @@ void ALightTankCharacter::Tick(float DeltaTime)
 	UpdateTurret(DeltaTime);
 	UpdateGun(DeltaTime);
 	ActiveWheelDust();
+	ActiveSkidMark();
 }
 
 bool ALightTankCharacter::IsEnemyInDetectionRange() const
@@ -451,6 +454,30 @@ void ALightTankCharacter::InitComponents()
 	WheelDustPSCArray[1]->SetRelativeRotation({0, 90, 0});
 	WheelDustPSCArray[2]->SetRelativeRotation({0, 90, 0});
 	WheelDustPSCArray[3]->SetRelativeRotation({0, 90, 0});
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NS_WheelSkidAsset
+	(TEXT("/Game/Material/TankSkid/NS_SkidMark.NS_SkidMark"));
+	if (NS_WheelSkidAsset.Succeeded())
+	{
+		WheelSkidNSAsset = NS_WheelSkidAsset.Object;
+	}
+	
+	for (int i = 0; i < 4; i++)
+	{
+		UNiagaraComponent* WheelSkidNS = CreateDefaultSubobject<UNiagaraComponent>(FName(*FString::Printf(TEXT("WheelSkidNS_%d"), i)));
+		WheelSkidNS->SetupAttachment(BelowBodyCollision);
+		WheelSkidNS->SetAutoActivate(false);
+		WheelSkidNS->SetAsset(WheelSkidNSAsset);
+		WheelSkidNSArray.Add(WheelSkidNS);
+	}
+	WheelSkidNSArray[0]->SetRelativeLocation({100, 120, -70});
+	WheelSkidNSArray[1]->SetRelativeLocation({-100, 120, -70});
+	WheelSkidNSArray[2]->SetRelativeLocation({100, -120, -70});
+	WheelSkidNSArray[3]->SetRelativeLocation({-100, -120, -70});
+	WheelSkidNSArray[0]->SetRelativeRotation({0, 90, 0});
+	WheelSkidNSArray[1]->SetRelativeRotation({0, 90, 0});
+	WheelSkidNSArray[2]->SetRelativeRotation({0, 90, 0});
+	WheelSkidNSArray[3]->SetRelativeRotation({0, 90, 0});
 }
 
 void ALightTankCharacter::InitCollisionPreset()
@@ -468,13 +495,6 @@ void ALightTankCharacter::InitCollisionPreset()
 	GunCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	HPWidgetComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 
-	// TrackLeft->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	// TrackRight->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	// ChassisLeft->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	// ChassisRight->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	// Turret->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	// Hull->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	// Gun->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	TrackLeft->SetCollisionProfileName(TEXT("Enemy_Tank"));
 	TrackRight->SetCollisionProfileName(TEXT("Enemy_Tank"));
 	ChassisLeft->SetCollisionProfileName(TEXT("Enemy_Tank"));
@@ -601,6 +621,31 @@ void ALightTankCharacter::ActiveWheelDust()
     
 		// 만약 파티클 자체를 스케일링하고 싶다면 (파티클 시스템의 전체 크기):
 		WheelDustPSC->SetWorldScale3D(FVector(DustIntensity));
+	}
+}
+
+void ALightTankCharacter::ActiveSkidMark()
+{
+	float SpeedRatio = FMath::Clamp(FMath::Abs(CurrentForwardSpeed) / MaxForwardSpeed, 0.0f, 1.0f);
+
+	if (SpeedRatio < 0.01f)
+	{
+		for (auto WheelSkidNS : WheelSkidNSArray)
+		{
+			if (WheelSkidNS && WheelSkidNS->IsActive())
+			{
+				WheelSkidNS->Deactivate();
+			}
+		}
+		return;
+	}
+	
+	for (auto WheelSkidNS : WheelSkidNSArray)
+	{
+		if (WheelSkidNS && !WheelSkidNS->IsActive())
+		{
+			WheelSkidNS->Activate(true);
+		}
 	}
 }
 

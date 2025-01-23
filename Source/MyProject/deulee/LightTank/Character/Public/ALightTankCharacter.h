@@ -108,6 +108,7 @@ protected:
 	void InitWidget();
 	void SetWidget();
 	void ActiveWheelDust();
+	void ActiveSkidMark();
 
 	// Goal Queue에 있는 Goal을 하나씩 빼서 처리하는 함수
 	void HandleGoal();
@@ -320,4 +321,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	TArray<class UParticleSystemComponent*> WheelDustPSCArray;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	class UNiagaraSystem* WheelSkidNSAsset;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	TArray<class UNiagaraComponent*> WheelSkidNSArray;
 };
