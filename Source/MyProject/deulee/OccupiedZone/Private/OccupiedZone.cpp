@@ -151,9 +151,20 @@ bool AOccupiedZone::ValidateTanksState()
 void AOccupiedZone::SetControllingTeam()
 {
 	// 팀 결정 로직 매핑
-	PrevTeam = ControllingTeam == ETeam::None ? PrevTeam : ControllingTeam;
+	if (ControllingTeam != ETeam::None && ControllingTeam != ETeam::Attack)
+	{
+		PrevTeam = ControllingTeam;
+	}
 	ControllingTeam = DetermineControllingTeam();
+	ETeam Temp = ControllingTeam;
+
+	// Controlling Team이 실제 팀이 점유중이었는데 None으로 바뀌었다면 공격을 당한 것으로 판단
+	// 공격을 당할 때의 State를 설정
 	ControllingTeam = ValidateTanksState() ? ControllingTeam : ETeam::None;
+	if (Temp != ETeam::None && ControllingTeam == ETeam::None)
+	{
+		ControllingTeam = ETeam::Attack;
+	}
 }
 
 void AOccupiedZone::BroadCaseWinningTeam()
@@ -169,6 +180,11 @@ void AOccupiedZone::BroadCaseWinningTeam()
 
 void AOccupiedZone::UpdateCaptureProgress(float DeltaSeconds)
 {
+	if (ControllingTeam == ETeam::Attack)
+	{
+		// 공격을 당하고 있을 때는 굳이 진행하지 않음
+		return ;
+	}
 	if (ControllingTeam != PrevTeam && ControllingTeam != ETeam::None)
 	{
 		CaptureProgress = 0;
