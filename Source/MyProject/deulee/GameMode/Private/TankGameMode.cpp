@@ -7,6 +7,7 @@
 #include "OccupiedZone.h"
 #include "OutcomeUI.h"
 #include "Kismet/GameplayStatics.h"
+#include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
 ATankGameMode::ATankGameMode()
 {
@@ -82,8 +83,12 @@ APawn* ATankGameMode::SpawnActorAtRandomPlace(UClass* SpawnClass)
 		SpawnZ = HitResult.Location.Z;
 	}
 
+	float Offset = 200.f;
+	if (SpawnClass == AI_LightTankClass || SpawnClass == SkyTankClass)
+	{
+		Offset = 700.f;
+	}
 	// 3. Offset 추가
-	constexpr float Offset = 700.f;
 	SpawnZ += Offset;
 
 	// 4. 최종 위치 계산
