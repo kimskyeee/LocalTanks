@@ -61,9 +61,11 @@ void ATankGameMode::RespawnTank(AActor* DestroyedActor)
 
 APawn* ATankGameMode::SpawnActorAtRandomPlace(UClass* SpawnClass)
 {
-	// 1. X, Y 범위 설정
-	float RandomX = FMath::FRandRange(-15000.f, 15000.f);
-	float RandomY = FMath::FRandRange(-15000.f, 15000.f);
+	float Radius = FMath::RandRange(15000.f, 18000.f);
+	float Angle  = FMath::RandRange(0.f, 2.f * PI);
+
+	float RandomX = Radius * FMath::Cos(Angle);
+	float RandomY = Radius * FMath::Sin(Angle);
 
 	// Z값 초기화
 	float SpawnZ = 0.f;

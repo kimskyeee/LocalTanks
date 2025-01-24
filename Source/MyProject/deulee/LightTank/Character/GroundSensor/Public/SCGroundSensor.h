@@ -21,7 +21,7 @@ public:
 	bool IsOnGround() const { return bOnGround; }
 	
 protected:
-	float TraceDistance = 1000.0f;
+	float TraceDistance = 20000.0f;
 	bool bOnGround;
 	FVector HitLocation;
 	FVector HitNormal;
