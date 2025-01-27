@@ -21,6 +21,8 @@ public class MyProject : ModuleRules
 			"MyProject/deulee/LightTank/Pathfinding/Public",
 			"MyProject/deulee/OccupiedZone/Public",
 			"MyProject/deulee/GameMode/Public",
+			"MyProject/deulee/CoverActor/Public",
+			"MyProject/deulee/CoverComponent/Public",
 			"MyProject/deulee/Shell/Public",
 			"MyProject/deulee/Armor/Public",
 			"MyProject/deulee/Utils/Public",
