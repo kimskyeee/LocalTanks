@@ -2,6 +2,7 @@
 
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
+#include "SnippingState.h"
 #include "UApproachEnemyState.h"
 #include "UAttackEnemyState.h"
 #include "UDamagedState.h"
@@ -26,7 +27,15 @@ void UACLightTankFSM::BeginPlay()
 
 	InitStatePool();
 	
-	CurrentState = StatePool[ETankStateID::MoveToCenter];
+	if (OwnerActor->GetRoleID() == ETankRoleID::Sniper)
+	{
+		CurrentState = StatePool[ETankStateID::Snipping];
+	}
+	else
+	{
+		CurrentState = StatePool[ETankStateID::MoveToCenter];
+	}
+	
 	CurrentState->Enter(OwnerActor, this);
 }
 
@@ -65,7 +74,8 @@ void UACLightTankFSM::InitStatePool()
 	StatePool.Add(ETankStateID::Retreating, NewObject<URetreatingState>(this, URetreatingState::StaticClass()));
 	StatePool.Add(ETankStateID::Damaged, NewObject<UDamagedState>(this, UDamagedState::StaticClass()));
 	StatePool.Add(ETankStateID::Destroyed, NewObject<UDestroyedState>(this, UDestroyedState::StaticClass()));
-
+	StatePool.Add(ETankStateID::Snipping, NewObject<USnippingState>(this, USnippingState::StaticClass()));
+	
 	for (auto& State : StatePool)
 	{
 		State.Value->Initialize();

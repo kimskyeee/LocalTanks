@@ -15,4 +15,5 @@ enum class ETankStateID : uint8
 	Damaged UMETA(DisplayName = "Damaged"), // Damaged
 	Destroyed UMETA(DisplayName = "Destroyed"), // Destroyed
 	TopAlignment UMETA(DisplayName = "Top Alignment"), // Top Alignment
+	Snipping UMETA(DisplayName = "Snipping"), // Snipping
 };

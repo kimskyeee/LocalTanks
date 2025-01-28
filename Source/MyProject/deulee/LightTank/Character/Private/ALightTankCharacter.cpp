@@ -49,6 +49,8 @@ void ALightTankCharacter::BindToOccupiedZone()
 void ALightTankCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetActorLocation({-32397.732062,-18470.721525,5309.040213});
 	
 	GetComponents(USCGroundSensor::StaticClass(), GroundSensorArray);
 	SetWidget();
@@ -714,6 +716,11 @@ void ALightTankCharacter::UpdateMovement(float DeltaTime)
 	{
 		AverageNormal /= CountOnGround;
 		AverageHeight /= CountOnGround;
+	}
+	else
+	{
+		AverageNormal = FVector::UpVector;
+		AverageHeight = GetActorLocation().Z;
 	}
 
 	// 물리 기반

@@ -23,10 +23,10 @@ void USCGroundSensor::TickComponent(float DeltaTime, enum ELevelTick TickType,
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     
     FVector Start = GetComponentLocation();
+    FFastLogger::LogFile(TEXT("LocalTankErrorRep.txt"), TEXT("Start : %s"), *Start.ToString());
     FVector End = Start - (GetUpVector() * TraceDistance); 
     
     FHitResult HitResult;
-
     
     FCollisionQueryParams TraceParams;
     TraceParams.AddIgnoredActor(GetOwner());
@@ -50,5 +50,8 @@ void USCGroundSensor::TickComponent(float DeltaTime, enum ELevelTick TickType,
         bOnGround = false;
         // 실패한 경우 빨간색 디버그 라인 그리기
         DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.1f, 0, 2.0f);
+    }
+    if (bOnGround)
+    {
     }
 }

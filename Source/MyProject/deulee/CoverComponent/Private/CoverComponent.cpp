@@ -55,7 +55,6 @@ void UCoverComponent::SetCoverValue()
 		}
 	}
 
-	FFastLogger::LogScreen(FColor::Red, TEXT("CoverRender : %d"), CoverRender);
 	for (auto& MeshComponent : MeshComponents)
 	{
 		// MeshComponent->bRenderCustomDepth = CoverRender;

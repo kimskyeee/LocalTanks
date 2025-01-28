@@ -149,7 +149,7 @@ void ATankGameMode::BeginPlay()
 
 	for (int i = 0; i < 1; i++)
 	{
-		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActorAtRandomPlace(AI_LightTankClass)));
+		// AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActorAtRandomPlace(AI_LightTankClass)));
 		// AI_SkyTanks.Add(Cast<AMyPawn>(SpawnActorAtRandomPlace(SkyTankClass)));
 	}
 }
