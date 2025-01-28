@@ -53,5 +53,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "TankGameMode")
 	TArray<FVector> SpawnLocations;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "TankGameMode")
+	TArray<class ACoverActorBase*> CoverActors;
+
 	int32 PrevSpawnIndex = -1;
 };

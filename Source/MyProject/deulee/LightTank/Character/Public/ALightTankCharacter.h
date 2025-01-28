@@ -59,6 +59,8 @@ public:
 	bool IsReloadedShell();
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
 	void Fire();
+	UFUNCTION(BlueprintCallable, Category = "Tank State")
+	FAttackDelegate& GetAttackDelegate() { return AttackDelegate; }
 	
 	/// Getter, Setter 함수들
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
@@ -318,6 +320,9 @@ protected:
 	class UParticleSystemComponent* GunFirePSC;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	class UParticleSystemComponent* ShockWavePSC;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	FAttackDelegate AttackDelegate;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	TArray<class UParticleSystemComponent*> WheelDustPSCArray;

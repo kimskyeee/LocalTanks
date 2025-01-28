@@ -1,6 +1,7 @@
 #include "TankGameMode.h"
 
 #include "ALightTankCharacter.h"
+#include "CoverActorBase.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
 #include "Blueprint/UserWidget.h"
@@ -106,7 +107,7 @@ APawn* ATankGameMode::SpawnActorAtRandomPlace(UClass* SpawnClass)
 		SpawnPawn->AutoPossessPlayer = EAutoReceiveInput::Disabled;
 	}
 	return SpawnPawn;
-};
+}
 
 void ATankGameMode::OnWinnerDetected(ETeam WinningTeam)
 {
@@ -135,6 +136,14 @@ void ATankGameMode::BeginPlay()
 		OccupiedZone->OnWinnerDetectedDelegate.AddDynamic(this, &ATankGameMode::OnWinnerDetected);
 	}
 
+	// CoverActors 탐색
+	TArray<AActor*> FindLists;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACoverActorBase::StaticClass(), FindLists);
+	for (AActor* Actor : FindLists)
+	{
+		CoverActors.Add(Cast<ACoverActorBase>(Actor));
+	}
+	
 	PlayerWinnerWidget = Cast<UOutcomeUI>(CreateWidget<UUserWidget>(GetWorld(), PlayerWinnerWidgetClass));
 	AIWinnerWidget = Cast<UOutcomeUI>(CreateWidget<UUserWidget>(GetWorld(), AIWinnerWidgetClass));
 

@@ -19,6 +19,7 @@ AMyPawn::AMyPawn()
 void AMyPawn::Fire(FVector ShellLocation, FRotator ShellRotation)
 {
 	Armor->FireShell(ShellID, ShellLocation, ShellRotation, ShellProfileName, AMk_TankPawn::StaticClass());
+	AttackDelegate.OnAttackDelegate.Broadcast();
 }
 
 void AMyPawn::BeginPlay()

@@ -25,6 +25,7 @@ public class MyProject : ModuleRules
 			"MyProject/deulee/CoverComponent/Public",
 			"MyProject/deulee/Shell/Public",
 			"MyProject/deulee/Armor/Public",
+			"MyProject/deulee/Delegate/Public",
 			"MyProject/deulee/Utils/Public",
 			"MyProject/skyee2/damagesystem/Public",
 			"MyProject/skyee2/Character/Public",

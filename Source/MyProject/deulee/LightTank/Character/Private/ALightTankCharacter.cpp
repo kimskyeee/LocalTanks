@@ -264,6 +264,7 @@ void ALightTankCharacter::Fire()
 	FVector ShellLocation = GunMuzzle->GetComponentLocation();
 	// ShellLocation += GunMuzzle->GetForwardVector() * 650;
 	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName, AMk_TankPawn::StaticClass());
+	AttackDelegate.OnAttackDelegate.Broadcast();
 	GunFirePSC->Activate(true);
 }
 
