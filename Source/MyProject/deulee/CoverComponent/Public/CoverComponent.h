@@ -23,6 +23,9 @@ protected:
 	float CoverValue = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Cover")
+	bool CoverRender = true;
+
+	UPROPERTY(EditAnywhere, Category = "Cover")
 	FTimerHandle CoverTimerHandle;
 
 	UPROPERTY(EditAnywhere, Category = "Cover")

@@ -147,9 +147,9 @@ void ATankGameMode::BeginPlay()
 	PlayerWinnerWidget = Cast<UOutcomeUI>(CreateWidget<UUserWidget>(GetWorld(), PlayerWinnerWidgetClass));
 	AIWinnerWidget = Cast<UOutcomeUI>(CreateWidget<UUserWidget>(GetWorld(), AIWinnerWidgetClass));
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		AI_LightTanks.Add(Cast<ALightTankCharacter>(SpawnActorAtRandomPlace(AI_LightTankClass)));
-		AI_SkyTanks.Add(Cast<AMyPawn>(SpawnActorAtRandomPlace(SkyTankClass)));
+		// AI_SkyTanks.Add(Cast<AMyPawn>(SpawnActorAtRandomPlace(SkyTankClass)));
 	}
 }
