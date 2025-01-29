@@ -7,6 +7,7 @@
 #include "TeamInterface.h"
 #include "GameFramework/Pawn.h"
 #include "WheeledVehiclePawn.h"
+#include "AttackDelegate.h"
 #include "Mk_TankPawn.generated.h"
 
 UCLASS()
@@ -39,6 +40,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mk_TankPawn")
 	void Fire(FVector ShellLocation, FRotator ShellRotation);
 
+	UFUNCTION(BlueprintCallable, Category = "Mk_TankPawn")
+	FAttackDelegate& GetAttackDelegate() { return AttackDelegate; }
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
 	class UOccupationComponent* OccupationComponent;
@@ -47,8 +51,11 @@ protected:
 	class UArmor* Armor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
-	EShellID ShellID = EShellID::Pzgr39;
+	EShellID ShellID = EShellID::Pzgr41;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	FName ShellProfileName = TEXT("Player_Missile");
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	FAttackDelegate AttackDelegate;
 };

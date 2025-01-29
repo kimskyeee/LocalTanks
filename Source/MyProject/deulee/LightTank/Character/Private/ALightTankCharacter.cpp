@@ -49,7 +49,7 @@ void ALightTankCharacter::BindToOccupiedZone()
 void ALightTankCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	GetComponents(USCGroundSensor::StaticClass(), GroundSensorArray);
 	SetWidget();
 	BindToOccupiedZone();
@@ -264,6 +264,7 @@ void ALightTankCharacter::Fire()
 	FVector ShellLocation = GunMuzzle->GetComponentLocation();
 	// ShellLocation += GunMuzzle->GetForwardVector() * 650;
 	Armor->FireShell(ShellID, ShellLocation, GunMuzzle->GetComponentRotation(), ShellProfileName, AMk_TankPawn::StaticClass());
+	AttackDelegate.OnAttackDelegate.Broadcast();
 	GunFirePSC->Activate(true);
 }
 
@@ -713,6 +714,11 @@ void ALightTankCharacter::UpdateMovement(float DeltaTime)
 	{
 		AverageNormal /= CountOnGround;
 		AverageHeight /= CountOnGround;
+	}
+	else
+	{
+		AverageNormal = FVector::UpVector;
+		AverageHeight = GetActorLocation().Z;
 	}
 
 	// 물리 기반

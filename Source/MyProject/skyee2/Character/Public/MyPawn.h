@@ -27,6 +27,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MyPawn")
 	void Fire(FVector ShellLocation, FRotator ShellRotation);
+
+	UFUNCTION(BlueprintCallable, Category = "MyPawn")
+	FAttackDelegate& GetAttackDelegate() { return AttackDelegate; }
 protected:
 	// 게임 시작시 호출
 	virtual void BeginPlay() override;
@@ -42,4 +45,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	FName ShellProfileName = TEXT("Enemy_Missile");
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
+	FAttackDelegate AttackDelegate;
 };
