@@ -51,7 +51,7 @@ protected:
 	class UArmor* Armor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkyeePawn")
-	EShellID ShellID = EShellID::Pzgr39;
+	EShellID ShellID = EShellID::Pzgr41;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	FName ShellProfileName = TEXT("Player_Missile");

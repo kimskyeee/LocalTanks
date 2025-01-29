@@ -224,16 +224,16 @@ void ARespawnManager::SpawnRusher()
 	// UCLASS SkyTankClass, DeuleeTankClass를 반반 나눠서 스폰
 	// 투 포인터
 	UClass* SpawnClass = nullptr;
-	// if (SkyTankClassCount <= LightTankClassCount)
-	// {
-	// 	SpawnClass = SkyTankClass;
-	// 	SkyTankClassCount++;
-	// }
-	// else
-	// {
+	if (SkyTankClassCount <= LightTankClassCount)
+	{
+		SpawnClass = SkyTankClass;
+		SkyTankClassCount++;
+	}
+	else
+	{
 		SpawnClass = AI_LightTankClass;
 		LightTankClassCount++;
-	// }
+	}
 	
 	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SpawnClass));
 	if (SpawnedPawn)
@@ -269,12 +269,12 @@ void ARespawnManager::SpawnTankBeginPlay()
 		SniperCount++;
 	}
 
-	// for (int i = 0; i < HiderMaxInMap; i++)
-	// {
-	// 	SpawnHider();
-	// 	HiderMax--;
-	// 	HiderCount++;
-	// }
+	for (int i = 0; i < HiderMaxInMap; i++)
+	{
+		SpawnHider();
+		HiderMax--;
+		HiderCount++;
+	}
 
 	for (int i = 0; i < RusherMaxInMap; i++)
 	{

@@ -100,7 +100,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 RusherMaxInMap = 2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	int32 RusherMax = 3;
+	int32 RusherMax = 4;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 SkyTankClassCount = 0;
