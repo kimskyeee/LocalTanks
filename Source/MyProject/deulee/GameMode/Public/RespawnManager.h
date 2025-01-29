@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Respawn")
 	void StartGame();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateCountEnemyTank(ETankRoleID TankRoleID, int32 Count);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	FOnAIDefeated OnAIDefeatedDelegate;
 
