@@ -438,7 +438,7 @@ void ALightTankCharacter::InitComponents()
 		WheelDustVFX = P_WheelDustVFX.Object;
 	}
 
-	for (int i = 0; i < 4; i++)
+	for (int32 i = 0; i < 4; i++)
 	{
 		UParticleSystemComponent* WheelDustPSC = CreateDefaultSubobject<UParticleSystemComponent>(FName(*FString::Printf(TEXT("WheelDustPSC_%d"), i)));
 		WheelDustPSC->SetupAttachment(BelowBodyCollision);
@@ -463,7 +463,7 @@ void ALightTankCharacter::InitComponents()
 		WheelSkidNSAsset = NS_WheelSkidAsset.Object;
 	}
 	
-	for (int i = 0; i < 4; i++)
+	for (int32 i = 0; i < 4; i++)
 	{
 		UNiagaraComponent* WheelSkidNS = CreateDefaultSubobject<UNiagaraComponent>(FName(*FString::Printf(TEXT("WheelSkidNS_%d"), i)));
 		WheelSkidNS->SetupAttachment(BelowBodyCollision);

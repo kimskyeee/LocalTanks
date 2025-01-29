@@ -51,7 +51,6 @@ void UCoverComponent::SetCoverValue()
 	// 어차피 CoverActorBase만 찾아냄
 	for (auto& HitResult : HitResults)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("HitResult : %s"), *HitResult.GetActor()->GetName());
 		ACoverActorBase* CoverActor = Cast<ACoverActorBase>(HitResult.GetActor());
 		if (CoverActor && CoverActor->IsCoverable())
 		{

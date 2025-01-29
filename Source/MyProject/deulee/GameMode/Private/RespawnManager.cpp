@@ -88,7 +88,7 @@ int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
 	TArray<FTimerHandle>& TimerHandles = RespawnTimerHandles[TankRoleID].TimerHandles;
 	TArray<bool>& TimerActiveCache = RespawnTimerHandles[TankRoleID].TimerActiveCache;
 
-	int Index = -1;
+	int32 Index = -1;
 	for (Index = 0; Index < TimerActiveCache.Num(); Index++)
 	{
 		if (!TimerActiveCache[Index])
@@ -214,12 +214,12 @@ void ARespawnManager::SpawnPlayer()
 
 void ARespawnManager::SpawnHider()
 {
-	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SkyTankClass));
+	FTransform T;
+	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SkyTankClass, T));
 	if (SpawnedPawn)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("Hider Spawned"));
 		SpawnedPawn->SetRoleID(ETankRoleID::Hider);
-		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
+		SpawnedPawn->FinishSpawning(T, true);
 	}
 }
 
@@ -238,12 +238,13 @@ void ARespawnManager::SpawnRusher()
 		SpawnClass = AI_LightTankClass;
 		LightTankClassCount++;
 	}
-	
-	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SpawnClass));
+
+	FTransform T;
+	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SpawnClass, T));
 	if (SpawnedPawn)
 	{
 		SpawnedPawn->SetRoleID(ETankRoleID::Rusher);
-		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
+		SpawnedPawn->FinishSpawning(T, true);
 	}
 }
 
@@ -259,28 +260,27 @@ void ARespawnManager::SpawnSniper()
 	if (SpawnedPawn)
 	{
 		SpawnedPawn->SetRoleID(ETankRoleID::Sniper);
-		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
-		FFastLogger::LogScreen(FColor::Red, TEXT("Sniper Spawned"));
+		SpawnedPawn->FinishSpawning(T, true);
 	}
 }
 
 void ARespawnManager::SpawnTankBeginPlay()
 {
-	for (int i = 0; i < SniperMaxInMap; i++)
+	for (int32 i = 0; i < SniperMaxInMap; i++)
 	{
 		SpawnSniper();
 		SniperMax--;
 		SniperCount++;
 	}
 
-	for (int i = 0; i < HiderMaxInMap; i++)
+	for (int32 i = 0; i < HiderMaxInMap; i++)
 	{
 		SpawnHider();
 		HiderMax--;
 		HiderCount++;
 	}
 
-	for (int i = 0; i < RusherMaxInMap; i++)
+	for (int32 i = 0; i < RusherMaxInMap; i++)
 	{
 		SpawnRusher();
 		RusherMax--;
@@ -288,7 +288,7 @@ void ARespawnManager::SpawnTankBeginPlay()
 	}
 }
 
-APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass)
+APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& T)
 {
 	float Radius = FMath::RandRange(15000.f, 18000.f);
 	float Angle  = FMath::RandRange(0.f, 2.f * PI);
@@ -326,7 +326,6 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass)
 	FVector SpawnLocation = FVector(RandomX, RandomY, SpawnZ);
 
 	// 5. 액터 스폰
-	FTransform T{};
 	T.SetLocation(SpawnLocation);
 
 	// 반드시 FinishSpawningActor를 호출해야 함

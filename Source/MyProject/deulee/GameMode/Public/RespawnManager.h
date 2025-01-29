@@ -53,7 +53,7 @@ protected:
 	void SpawnSniper();
 
 	void SpawnTankBeginPlay();
-	APawn* SpawnActorAtRandomPlace(UClass* SpawnClass);
+	APawn* SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& T);
 	
 	TMap<ETankRoleID, void (ARespawnManager::*)(ETankRoleID)> RespawnStrategies;
 
