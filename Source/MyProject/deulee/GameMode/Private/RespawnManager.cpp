@@ -37,8 +37,6 @@ ARespawnManager::ARespawnManager()
 void ARespawnManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SpawnTankBeginPlay();
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -73,6 +71,11 @@ void ARespawnManager::RespawnTank(ETankRoleID TankRoleID)
 		(this->*RespawnFunc)(TankRoleID);
 		CheckGameEnded();
 	}
+}
+
+void ARespawnManager::StartGame()
+{
+	SpawnTankBeginPlay();
 }
 
 int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
@@ -214,6 +217,7 @@ void ARespawnManager::SpawnHider()
 	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SkyTankClass));
 	if (SpawnedPawn)
 	{
+		FFastLogger::LogScreen(FColor::Red, TEXT("Hider Spawned"));
 		SpawnedPawn->SetRoleID(ETankRoleID::Hider);
 		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
 	}

@@ -66,7 +66,7 @@ void UTankTopAlignmentState::SetTurretTargetAngle(ALightTankCharacter* Tank)
 	AActor* Target = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!Target)
 	{
-		check(false)
+		return ;
 	}
 	FVector TargetWorldLocation = Target->GetActorLocation();
 
@@ -99,7 +99,7 @@ void UTankTopAlignmentState::SetGunTargetAngle(ALightTankCharacter* Tank)
 	AActor* Target = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!Target)
 	{
-		check(false)
+		return ;
 	}
 	FVector TargetWorldLocation = Target->GetActorLocation();
 	TargetWorldLocation += Tank->GetActorUpVector() * 50.f; // 플레이어의 머리 위로 조정

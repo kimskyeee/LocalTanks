@@ -40,6 +40,16 @@ void ATankGameMode::RespawnTank(ETankRoleID TankRoleID)
 	}
 }
 
+void ATankGameMode::StartGame()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+	}
+	RespawnManager->StartGame();
+}
+
 void ATankGameMode::OnWinnerDetected(ETeam WinningTeam)
 {
 	if (bGameEnded)
@@ -67,6 +77,12 @@ void ATankGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeUIOnly());
+	}
+	
 	AOccupiedZone* OccupiedZone = Cast<AOccupiedZone>(UGameplayStatics::GetActorOfClass(GetWorld(), AOccupiedZone::StaticClass()));
 	if (OccupiedZone)
 	{

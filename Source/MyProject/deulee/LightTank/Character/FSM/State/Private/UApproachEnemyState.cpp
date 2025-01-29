@@ -20,7 +20,7 @@ void UApproachEnemyState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	AActor* PlayerActor = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerActor)
 	{
-		check(false)
+		return ;
 	}
 	FVector Player = PlayerActor->GetActorLocation();
 
