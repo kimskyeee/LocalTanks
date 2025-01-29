@@ -38,8 +38,6 @@ ARespawnManager::ARespawnManager()
 void ARespawnManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UpdateRemainAllEnemies();
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -72,7 +70,7 @@ void ARespawnManager::RespawnTank(ETankRoleID TankRoleID)
 	{
 		auto RespawnFunc = RespawnStrategies[TankRoleID];
 		(this->*RespawnFunc)(TankRoleID);
-		
+		UpdateRemainAllEnemies();
 		CheckGameEnded();
 	}
 }
@@ -80,6 +78,8 @@ void ARespawnManager::RespawnTank(ETankRoleID TankRoleID)
 void ARespawnManager::StartGame()
 {
 	SpawnTankBeginPlay();
+	
+	UpdateRemainAllEnemies();
 }
 
 int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
@@ -232,10 +232,20 @@ void ARespawnManager::RespawnSniper(ETankRoleID TankRoleID)
 void ARespawnManager::SpawnPlayer()
 {
 	FTransform T;
+	
 	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(SkyTankClass, T));
-	if (PlayerPawn)
+	if (!PlayerPawn)
 	{
+		return ;
 	}
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) // Null Guard
+	{
+		return ;
+	}
+
+	PlayerController->Possess(PlayerPawn);
 }
 
 void ARespawnManager::SpawnHider()
@@ -366,7 +376,7 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& 
 
 void ARespawnManager::UpdateRemainAllEnemies()
 {
-	UpdateRemainEnemyCount(ETankRoleID::Hider, HiderCount + HiderMax);
-	UpdateRemainEnemyCount(ETankRoleID::Rusher, RusherCount + RusherMax);
-	UpdateRemainEnemyCount(ETankRoleID::Sniper, SniperCount + SniperMax);
+	UpdateCountEnemyTank(ETankRoleID::Hider, HiderCount + HiderMax);
+	UpdateCountEnemyTank(ETankRoleID::Rusher, RusherCount + RusherMax);
+	UpdateCountEnemyTank(ETankRoleID::Sniper, SniperCount + SniperMax);
 }
