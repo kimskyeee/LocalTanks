@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Respawn")
 	void StartGame();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateRemainEnemyCount(ETankRoleID RoleID, int32 Count);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	FOnAIDefeated OnAIDefeatedDelegate;
 
@@ -46,6 +49,7 @@ protected:
 	void RespawnHider(ETankRoleID TankRoleID);
 	void RespawnRusher(ETankRoleID TankRoleID);
 	void RespawnSniper(ETankRoleID TankRoleID);
+	void UpdateRemainAllEnemies();
 
 	void SpawnPlayer();
 	void SpawnHider();
@@ -87,7 +91,6 @@ protected:
 	int32 SniperMaxInMap = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 SniperMax = 2;
-	
 
 	// 숨는 탱크의 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")

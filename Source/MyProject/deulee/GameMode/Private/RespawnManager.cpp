@@ -3,6 +3,7 @@
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
+#include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
 ARespawnManager::ARespawnManager()
 {
@@ -69,6 +70,7 @@ void ARespawnManager::RespawnTank(ETankRoleID TankRoleID)
 	{
 		auto RespawnFunc = RespawnStrategies[TankRoleID];
 		(this->*RespawnFunc)(TankRoleID);
+		
 		CheckGameEnded();
 	}
 }
@@ -109,6 +111,23 @@ int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
 
 void ARespawnManager::RespawnPlayer(ETankRoleID TankRoleID)
 {
+	int32 TimerIndex = FindTimerIndex(TankRoleID);
+	if (TimerIndex == -1)
+	{
+		return ;
+	}
+
+	TWeakObjectPtr<ARespawnManager> WeakThis = this;
+	FTimerHandle& TimerHandle = RespawnTimerHandles[TankRoleID].TimerHandles[TimerIndex];
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([WeakThis, TankRoleID, TimerIndex]()
+	{
+		if (WeakThis.IsValid())
+		{
+			ARespawnManager* StrongThis = WeakThis.Get();
+			StrongThis->SpawnPlayer();
+			StrongThis->RespawnTimerHandles[TankRoleID].TimerActiveCache[TimerIndex] = false;
+		}
+	}), RespawnTimers[TankRoleID], false);
 }
 
 void ARespawnManager::RespawnHider(ETankRoleID TankRoleID)
@@ -210,6 +229,11 @@ void ARespawnManager::RespawnSniper(ETankRoleID TankRoleID)
 
 void ARespawnManager::SpawnPlayer()
 {
+	FTransform T;
+	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(SkyTankClass, T));
+	if (PlayerPawn)
+	{
+	}
 }
 
 void ARespawnManager::SpawnHider()
@@ -335,4 +359,11 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& 
 		SpawnPawn->AutoPossessPlayer = EAutoReceiveInput::Disabled;
 	}
 	return SpawnPawn;
+}
+
+void ARespawnManager::UpdateRemainAllEnemies()
+{
+	UpdateRemainEnemyCount(ETankRoleID::Hider, HiderCount + HiderMax);
+	UpdateRemainEnemyCount(ETankRoleID::Rusher, RusherCount + RusherMax);
+	UpdateRemainEnemyCount(ETankRoleID::Sniper, SniperCount + SniperMax);
 }
