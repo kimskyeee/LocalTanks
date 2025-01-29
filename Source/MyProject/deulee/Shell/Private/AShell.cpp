@@ -92,7 +92,7 @@ void AShell::Active()
 	BulletNS->SetVisibility(true);
 	bCollisionActive = false;
 	// 5초후 비활성화
-	GetWorld()->GetTimerManager().SetTimer(DeActiveTimerHandle, this, &AShell::DeActive, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(DeActiveTimerHandle, this, &AShell::DeActive, 10.0f, false);
 }
 
 void AShell::SetInitialVelocity()

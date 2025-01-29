@@ -4,7 +4,6 @@
 #include "AITank.h"
 #include "DamageInterface.h"
 #include "EShellID.h"
-#include "ETankRoleID.h"
 #include "TeamInterface.h"
 #include "GameFramework/Pawn.h"
 #include "ALightTankCharacter.generated.h"
@@ -15,12 +14,6 @@ class ALightTankCharacter : public AAITank, public IDamageInterface, public ITea
 	GENERATED_BODY()
 public:
 	ALightTankCharacter();
-
-	// 역할 : 탱크의 역할
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	void SetRoleID(ETankRoleID InRoleID) {this->RoleID = InRoleID;}
-	UFUNCTION(BlueprintCallable, Category = "Tank State")
-	ETankRoleID GetRoleID() const {return RoleID;}
 
 	/// 상태 전이에 필요한 조건 체크 함수들
 	UFUNCTION(BlueprintCallable, Category = "Tank State")
@@ -129,11 +122,7 @@ protected:
 	void UpdateTurret(float DeltaTime);
 	void UpdateGun(float DeltaTime);
 	void CalculateTargetSpeed(float DeltaTime);
-	void CalculateTargetTurnSpeed(float DeltaTime);
-
-	// 역할 : 저격수, 돌격
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
-	ETankRoleID RoleID;
+	void CalculateTargetTurnSpeed(float DeltaTime);;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tank Character")
 	class UACLightTankFSM* FSM;

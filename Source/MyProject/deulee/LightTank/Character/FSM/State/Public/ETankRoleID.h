@@ -10,4 +10,5 @@ enum class ETankRoleID : uint8
 	Rusher UMETA(DisplayName = "Rusher"),
 	Sniper UMETA(DisplayName = "Sniper"),
 	Hider UMETA(DisplayName = "Hider"),
+	Player UMETA(DisplayName = "Player")
 };

@@ -50,8 +50,6 @@ void ALightTankCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetActorLocation({-32397.732062,-18470.721525,5309.040213});
-	
 	GetComponents(USCGroundSensor::StaticClass(), GroundSensorArray);
 	SetWidget();
 	BindToOccupiedZone();

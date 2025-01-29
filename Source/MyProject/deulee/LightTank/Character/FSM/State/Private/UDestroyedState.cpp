@@ -15,7 +15,7 @@ void UDestroyedState::Enter(ALightTankCharacter* Tank, UACLightTankFSM* FSM)
 	ATankGameMode* GameMode = Cast<ATankGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode)
     {
-        GameMode->RespawnTank(Tank);
+        GameMode->RespawnTank(Tank->GetRoleID());
     }
 	Tank->Destroy();
 }
