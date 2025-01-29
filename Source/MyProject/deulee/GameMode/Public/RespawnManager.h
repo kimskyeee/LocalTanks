@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Respawn")
 	void RespawnTank(ETankRoleID TankRoleID);
 
+	UFUNCTION(BlueprintCallable, Category = "Respawn")
+	void StartGame();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	FOnAIDefeated OnAIDefeatedDelegate;
 

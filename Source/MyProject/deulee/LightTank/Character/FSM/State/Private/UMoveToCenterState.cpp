@@ -95,7 +95,7 @@ bool UMoveToCenterState::IsPossibleToApproach(ALightTankCharacter* Tank)
 	AActor* PlayerActor = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerActor)
 	{
-		check(false)
+		return false;
 	}
 	FVector Player = PlayerActor->GetActorLocation();
 

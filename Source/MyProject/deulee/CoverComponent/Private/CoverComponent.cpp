@@ -34,7 +34,12 @@ void UCoverComponent::SetCoverValue()
 	CoverRender = true;
 	// Line Trace사용하여 커버를 찾는다.
 	FVector Start = GetComponentLocation();
-	FVector Player = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!PlayerPawn)
+	{
+		return;
+	}
+	FVector Player = PlayerPawn->GetActorLocation();
 
 	// Line Trace에 CoverActorBase를 제외하고는 다른 액터들은 무시한다.
 	FCollisionQueryParams CollisionParams;

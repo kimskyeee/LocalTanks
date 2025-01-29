@@ -16,6 +16,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TankGameMode")
 	void RespawnTank(ETankRoleID TankRoleID);
 
+	UFUNCTION(BlueprintCallable, Category = "TankGameMode")
+	void StartGame();
+
 protected:
 	UFUNCTION()
 	void OnWinnerDetected(ETeam WinningTeam);
