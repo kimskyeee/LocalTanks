@@ -21,6 +21,7 @@ ABushActor::ABushActor()
 	BushMesh->SetupAttachment(SphereRoot);
 	BushMesh->SetRelativeRotation({180.0f, 0.0f, 0.0f});
 	BushMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BushMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Bush
 	(TEXT("/Game/Fab/Green_Bush/green_bush.green_bush"));
@@ -83,8 +84,6 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Is Locally Controlled
-	FFastLogger::LogScreen(FColor::Red, TEXT("OnBeginOverlap"));
-	
 	APawn* PlayerPawn = Cast<APawn>(OtherActor);
 	if (PlayerPawn && PlayerPawn->IsLocallyControlled())
 	{
@@ -107,7 +106,6 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	AMk_TankPawn* MkTank = Cast<AMk_TankPawn>(OtherActor);
 	if (MkTank)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("MkTank"));
 		MkTank->GetAttackDelegate().OnAttackDelegate.AddDynamic(this, &ABushActor::OnAttackDetected);
 	}
 }
@@ -115,7 +113,6 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("OnEndOverlap"));
 	// Is Locally Controlled
 	APawn* PlayerPawn = Cast<APawn>(OtherActor);
 	if (PlayerPawn && PlayerPawn->IsLocallyControlled())
@@ -144,7 +141,6 @@ void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 void ABushActor::OnAttackDetected()
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("OnAttackDetected"));
 	bCoverable = false;
 
 	BushMesh->SetMaterial(0, TransparencyBark);

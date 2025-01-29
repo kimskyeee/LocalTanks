@@ -98,7 +98,7 @@ ETeam AOccupiedZone::DetermineControllingTeam()
 {
 	ETeam ResultTeam = ETeam::None;
 	ETeam InPrevTeam = ResultTeam;
-	for (int i = 0; i < OverlappedTanks.Num(); ++i)
+	for (int32 i = 0; i < OverlappedTanks.Num(); ++i)
 	{
 		if (!OverlappedTanks[i]->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 		{
@@ -122,7 +122,7 @@ bool AOccupiedZone::ValidateTanksState()
 	bool bFlag = true;
 
 	AActor* PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
-	for (int i = 0; i < OverlappedTanks.Num(); ++i)
+	for (int32 i = 0; i < OverlappedTanks.Num(); ++i)
 	{
 		if (!OverlappedTanks[i]->GetClass()->ImplementsInterface(UDamageInterface::StaticClass()))
 		{

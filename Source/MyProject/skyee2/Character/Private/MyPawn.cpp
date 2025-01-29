@@ -49,7 +49,6 @@ float AMyPawn::GetMaxHealth_Implementation()
 
 bool AMyPawn::TakeDamage_Implementation(FMyDamageStructure DamageInfo)
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("AMyPawn::TakeDamage_Implementation"));
 	OccupationComponent->StartOccupationDelayed();
 	return IDamageInterface::TakeDamage_Implementation(DamageInfo);
 }

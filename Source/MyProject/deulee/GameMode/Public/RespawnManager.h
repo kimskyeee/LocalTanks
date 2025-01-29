@@ -49,6 +49,7 @@ protected:
 	void RespawnHider(ETankRoleID TankRoleID);
 	void RespawnRusher(ETankRoleID TankRoleID);
 	void RespawnSniper(ETankRoleID TankRoleID);
+	void UpdateRemainAllEnemies();
 
 	void SpawnPlayer();
 	void SpawnHider();
@@ -56,7 +57,7 @@ protected:
 	void SpawnSniper();
 
 	void SpawnTankBeginPlay();
-	APawn* SpawnActorAtRandomPlace(UClass* SpawnClass);
+	APawn* SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& T);
 	
 	TMap<ETankRoleID, void (ARespawnManager::*)(ETankRoleID)> RespawnStrategies;
 
@@ -85,16 +86,15 @@ protected:
 
 	// 저격수의 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	int32 SniperCount;
+	int32 SniperCount = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 SniperMaxInMap = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 SniperMax = 2;
-	
 
 	// 숨는 탱크의 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	int32 HiderCount;
+	int32 HiderCount = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 HiderMaxInMap = 2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
@@ -102,7 +102,7 @@ protected:
 
 	// 돌진 탱크의 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	int32 RusherCount;
+	int32 RusherCount = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 RusherMaxInMap = 2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
