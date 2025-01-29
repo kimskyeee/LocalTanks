@@ -38,6 +38,8 @@ ARespawnManager::ARespawnManager()
 void ARespawnManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UpdateRemainAllEnemies();
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -330,7 +332,8 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this); // 자신의 충돌 무시
-
+	Params.bTraceComplex = true;
+	
 	// 라인 트레이스 실행
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint, EndPoint, ECC_Visibility, Params))
 	{

@@ -21,6 +21,7 @@ ABushActor::ABushActor()
 	BushMesh->SetupAttachment(SphereRoot);
 	BushMesh->SetRelativeRotation({180.0f, 0.0f, 0.0f});
 	BushMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BushMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Bush
 	(TEXT("/Game/Fab/Green_Bush/green_bush.green_bush"));
