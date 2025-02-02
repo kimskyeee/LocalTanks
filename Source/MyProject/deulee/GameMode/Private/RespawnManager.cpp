@@ -231,13 +231,15 @@ void ARespawnManager::RespawnSniper(ETankRoleID TankRoleID)
 
 void ARespawnManager::SpawnPlayer()
 {
-	FTransform T;
+	FTransform T{};
 	
-	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(SkyTankClass, T));
+	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(PlayerTankClass, T));
 	if (!PlayerPawn)
 	{
 		return ;
 	}
+	// PlayerPawn->SetRoleID(ETankRoleID::Player);
+	PlayerPawn->FinishSpawning(T, true);
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!PlayerController) // Null Guard

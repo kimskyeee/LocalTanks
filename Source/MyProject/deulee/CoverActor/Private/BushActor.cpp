@@ -3,6 +3,7 @@
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
+#include "NavigationSystemTypes.h"
 #include "Components/SphereComponent.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
@@ -13,10 +14,16 @@ ABushActor::ABushActor()
 	SphereRoot->SetSphereRadius(1500.f); // 1500cm = 15m
 	SphereRoot->SetCollisionObjectType(ECC_GameTraceChannel7);
 	SphereRoot->SetCollisionResponseToAllChannels(ECR_Ignore);
-	SphereRoot->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECR_Block); // Bush for LineTrace
+	// SphereRoot->SetCollisionRespons eToChannel(ECC_GameTraceChannel7, ECR_Block); // Bush for LineTrace
 	SphereRoot->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap); // Enemy Tank
 	SphereRoot->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap); // Player Tank
 
+	BushCollision = CreateDefaultSubobject<USphereComponent>(TEXT("BushCollision"));
+	BushCollision->SetupAttachment(SphereRoot);
+	BushCollision->SetCollisionObjectType(ECC_GameTraceChannel7);
+	BushCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BushCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECR_Block);
+	
 	BushMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BushMesh"));
 	BushMesh->SetupAttachment(SphereRoot);
 	BushMesh->SetRelativeRotation({180.0f, 0.0f, 0.0f});
@@ -90,6 +97,8 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		bOverlap = true;
 		BushMesh->SetMaterial(0, TransparencyBark);
 		BushMesh->SetMaterial(1, TransparencyLeaf);
+		// 충돌도 일시적으로 멈출 필요가 있음
+		BushCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	}
 
 	// 공격시 투명화 되는 Delegate를 호출
@@ -120,6 +129,8 @@ void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		bOverlap = false;
 		BushMesh->SetMaterial(0, OriginalBark);
 		BushMesh->SetMaterial(1, OriginalLeaf);
+		// 충돌을 다시 넣어야 함
+		BushCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECR_Block);
 	}
 
 	ALightTankCharacter* LightTank = Cast<ALightTankCharacter>(OtherActor);
