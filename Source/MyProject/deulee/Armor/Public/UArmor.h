@@ -29,4 +29,10 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Armor")
 	class UShellPool* ShellPool;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Armor")
+	class USoundAttenuation* FireAttenuation;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Armor")
+	class USoundWave* FireSound;
 };

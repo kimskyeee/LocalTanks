@@ -6,6 +6,7 @@
 #include "ShellDecalComponent.h"
 #include "UArmor.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
@@ -16,6 +17,13 @@ APShell::APShell()
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &APShell::OnShellOverlapEvent);
 
 	Collision->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> HitSoundAsset
+	(TEXT("/Game/BuildingDestruction/Tank/MP_TankFire.MP_TankFire"));
+	if (HitSoundAsset.Succeeded())
+	{
+		HitSound = HitSoundAsset.Object;
+	}
 }
 
 void APShell::BeginPlay()
@@ -156,4 +164,7 @@ void APShell::ProcessShellAttack(AActor* OtherActor, const FHitResult& SweepResu
 	Armor->ReleaseShell(ShellInfo.ShellID, this);
 	// Debug Draw
 	// DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
+
+	// Sound Play For Hit
+	UGameplayStatics::PlaySoundAtLocation(this, HitSound, SweepResult.ImpactPoint, 1.0f, 1.0f, 0.0f, nullptr);
 }

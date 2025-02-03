@@ -31,4 +31,7 @@ private:
 
 	UPROPERTY()
 	FMyDamageStructure DamageInfo;
+
+	UPROPERTY()
+	class USoundWave* HitSound;
 };

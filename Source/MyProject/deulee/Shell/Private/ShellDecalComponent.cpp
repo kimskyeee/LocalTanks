@@ -45,7 +45,6 @@ void UShellDecalComponent::SpawnDecal(const FHitResult& HitResult, bool bHitTank
 
 	if (!IsValid(Decal))
 	{
-		FFastLogger::LogConsole(TEXT("Decal Create Failed"));
 		return;
 	}
 	
