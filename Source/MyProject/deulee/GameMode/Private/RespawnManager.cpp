@@ -360,29 +360,54 @@ void ARespawnManager::SpawnTankBeginPlay()
 
 APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& T)
 {
-	float Radius = FMath::RandRange(15000.f, 18000.f);
-	float Angle  = FMath::RandRange(0.f, 2.f * PI);
-
-	float RandomX = Radius * FMath::Cos(Angle);
-	float RandomY = Radius * FMath::Sin(Angle);
-
-	// Z값 초기화
 	float SpawnZ = 0.f;
-
-	// 2. Line Trace로 땅의 높이 확인
-	FVector StartPoint = FVector(RandomX, RandomY, 10000.f); // 위에서 시작
-	FVector EndPoint = FVector(RandomX, RandomY, -10000.f); // 아래로 쏘기
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // 자신의 충돌 무시
-	Params.bTraceComplex = true;
-	
-	// 라인 트레이스 실행
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint, EndPoint, ECC_Visibility, Params))
+	float RandomX = 0.f; // float RandomX
+	float RandomY = 0.f; // float RandomY
+	while (true)
 	{
-		// 땅의 Z 좌표를 가져옴
-		SpawnZ = HitResult.Location.Z;
+		float Radius = FMath::RandRange(15000.f, 18000.f);
+		float Angle  = FMath::RandRange(0.f, 2.f * PI);
+
+		RandomX = Radius * FMath::Cos(Angle);
+		RandomY = Radius * FMath::Sin(Angle);
+
+		// 플레이어의 위치와 충돌하지 않도록 플레이어 반경 5000.f 이상 떨어진 곳에서 스폰
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		APawn* PlayerPawn = PlayerController->GetPawn();
+		if (PlayerPawn)
+		{
+			FVector PlayerLocation = PlayerPawn->GetActorLocation();
+			PlayerLocation.Z = 0.f;
+			FVector SpawnLocation = FVector(RandomX, RandomY, 0.f);
+			if (FVector::Dist(PlayerLocation, SpawnLocation) < 5000.f)
+			{
+				continue ;
+			}
+		}
+	
+		// Z값 초기화
+		SpawnZ = 0.f;
+	
+		// 2. Line Trace로 땅의 높이 확인
+		FVector StartPoint = FVector(RandomX, RandomY, 10000.f); // 위에서 시작
+		FVector EndPoint = FVector(RandomX, RandomY, -10000.f); // 아래로 쏘기
+	
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this); // 자신의 충돌 무시
+		Params.bTraceComplex = true;
+		
+		// 라인 트레이스 실행
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint, EndPoint, ECC_Visibility, Params))
+		{
+			// 땅의 Z 좌표를 가져옴
+			SpawnZ = HitResult.Location.Z;
+			break ;
+		}
+		else
+		{
+			FFastLogger::LogScreen(FColor::Red, TEXT("Log : LineTrace Failed"));
+		}
 	}
 
 	float Offset = 200.f;
