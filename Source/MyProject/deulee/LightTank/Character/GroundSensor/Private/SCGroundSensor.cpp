@@ -29,6 +29,7 @@ void USCGroundSensor::TickComponent(float DeltaTime, enum ELevelTick TickType,
     
     FCollisionQueryParams TraceParams;
     TraceParams.AddIgnoredActor(GetOwner());
+    TraceParams.bTraceComplex = true;
     AOccupiedZone* OccupiedZone = Cast<AOccupiedZone>(UGameplayStatics::GetActorOfClass(GetWorld(), AOccupiedZone::StaticClass()));
     if (OccupiedZone)
     {

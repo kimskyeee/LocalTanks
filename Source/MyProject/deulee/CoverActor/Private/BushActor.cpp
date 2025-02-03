@@ -3,6 +3,7 @@
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
+#include "NavigationSystemTypes.h"
 #include "Components/SphereComponent.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
@@ -13,14 +14,21 @@ ABushActor::ABushActor()
 	SphereRoot->SetSphereRadius(1500.f); // 1500cm = 15m
 	SphereRoot->SetCollisionObjectType(ECC_GameTraceChannel7);
 	SphereRoot->SetCollisionResponseToAllChannels(ECR_Ignore);
-	SphereRoot->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECR_Block); // Bush for LineTrace
+	// SphereRoot->SetCollisionRespons eToChannel(ECC_GameTraceChannel7, ECR_Block); // Bush for LineTrace
 	SphereRoot->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap); // Enemy Tank
 	SphereRoot->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap); // Player Tank
 
+	BushCollision = CreateDefaultSubobject<USphereComponent>(TEXT("BushCollision"));
+	BushCollision->SetupAttachment(SphereRoot);
+	BushCollision->SetCollisionObjectType(ECC_GameTraceChannel7);
+	BushCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BushCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECR_Block);
+	
 	BushMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BushMesh"));
 	BushMesh->SetupAttachment(SphereRoot);
 	BushMesh->SetRelativeRotation({180.0f, 0.0f, 0.0f});
 	BushMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BushMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Bush
 	(TEXT("/Game/Fab/Green_Bush/green_bush.green_bush"));
@@ -83,14 +91,14 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Is Locally Controlled
-	FFastLogger::LogScreen(FColor::Red, TEXT("OnBeginOverlap"));
-	
 	APawn* PlayerPawn = Cast<APawn>(OtherActor);
 	if (PlayerPawn && PlayerPawn->IsLocallyControlled())
 	{
 		bOverlap = true;
 		BushMesh->SetMaterial(0, TransparencyBark);
 		BushMesh->SetMaterial(1, TransparencyLeaf);
+		// 충돌도 일시적으로 멈출 필요가 있음
+		BushCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	}
 
 	// 공격시 투명화 되는 Delegate를 호출
@@ -107,7 +115,6 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	AMk_TankPawn* MkTank = Cast<AMk_TankPawn>(OtherActor);
 	if (MkTank)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("MkTank"));
 		MkTank->GetAttackDelegate().OnAttackDelegate.AddDynamic(this, &ABushActor::OnAttackDetected);
 	}
 }
@@ -115,7 +122,6 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("OnEndOverlap"));
 	// Is Locally Controlled
 	APawn* PlayerPawn = Cast<APawn>(OtherActor);
 	if (PlayerPawn && PlayerPawn->IsLocallyControlled())
@@ -123,6 +129,8 @@ void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		bOverlap = false;
 		BushMesh->SetMaterial(0, OriginalBark);
 		BushMesh->SetMaterial(1, OriginalLeaf);
+		// 충돌을 다시 넣어야 함
+		BushCollision->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECR_Block);
 	}
 
 	ALightTankCharacter* LightTank = Cast<ALightTankCharacter>(OtherActor);
@@ -144,7 +152,6 @@ void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 void ABushActor::OnAttackDetected()
 {
-	FFastLogger::LogScreen(FColor::Red, TEXT("OnAttackDetected"));
 	bCoverable = false;
 
 	BushMesh->SetMaterial(0, TransparencyBark);

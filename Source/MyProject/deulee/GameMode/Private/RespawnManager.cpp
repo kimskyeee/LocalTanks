@@ -3,6 +3,8 @@
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
+#include "Blueprint/UserWidget.h"
+#include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
 ARespawnManager::ARespawnManager()
 {
@@ -11,7 +13,7 @@ ARespawnManager::ARespawnManager()
 	RespawnStrategies.Add(ETankRoleID::Rusher, &ARespawnManager::RespawnRusher);
 	RespawnStrategies.Add(ETankRoleID::Sniper, &ARespawnManager::RespawnSniper);
 
-	RespawnTimers.Add(ETankRoleID::Player, 3.f);
+	RespawnTimers.Add(ETankRoleID::Player, 5.f);
 	RespawnTimers.Add(ETankRoleID::Hider, 7.f);
 	RespawnTimers.Add(ETankRoleID::Rusher, 5.f);
 	RespawnTimers.Add(ETankRoleID::Sniper, 10.f);
@@ -32,11 +34,20 @@ ARespawnManager::ARespawnManager()
 
 	// SniperSpawnLocations
 	SniperSpawnLocations.Add(FVector(-32397.732062, -18470.721525, 5309.040213));
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> PlayerRespawnWidgetBPClass
+	(TEXT("/Game/NewSkye/GameUI/Flow_Beta/WBP_Respawn.WBP_Respawn_C"));
+	if (PlayerRespawnWidgetBPClass.Succeeded())
+	{
+		RespawnWidget = PlayerRespawnWidgetBPClass.Class;
+	}
 }
 
 void ARespawnManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	RespawnWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), RespawnWidget);
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -69,6 +80,7 @@ void ARespawnManager::RespawnTank(ETankRoleID TankRoleID)
 	{
 		auto RespawnFunc = RespawnStrategies[TankRoleID];
 		(this->*RespawnFunc)(TankRoleID);
+		UpdateRemainAllEnemies();
 		CheckGameEnded();
 	}
 }
@@ -76,6 +88,8 @@ void ARespawnManager::RespawnTank(ETankRoleID TankRoleID)
 void ARespawnManager::StartGame()
 {
 	SpawnTankBeginPlay();
+	
+	UpdateRemainAllEnemies();
 }
 
 int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
@@ -88,7 +102,7 @@ int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
 	TArray<FTimerHandle>& TimerHandles = RespawnTimerHandles[TankRoleID].TimerHandles;
 	TArray<bool>& TimerActiveCache = RespawnTimerHandles[TankRoleID].TimerActiveCache;
 
-	int Index = -1;
+	int32 Index = -1;
 	for (Index = 0; Index < TimerActiveCache.Num(); Index++)
 	{
 		if (!TimerActiveCache[Index])
@@ -109,6 +123,29 @@ int32 ARespawnManager::FindTimerIndex(ETankRoleID TankRoleID)
 
 void ARespawnManager::RespawnPlayer(ETankRoleID TankRoleID)
 {
+	int32 TimerIndex = FindTimerIndex(TankRoleID);
+	if (TimerIndex == -1)
+	{
+		return ;
+	}
+
+	TWeakObjectPtr<ARespawnManager> WeakThis = this;
+	FTimerHandle& TimerHandle = RespawnTimerHandles[TankRoleID].TimerHandles[TimerIndex];
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([WeakThis, TankRoleID, TimerIndex]()
+	{
+		if (WeakThis.IsValid())
+		{
+			ARespawnManager* StrongThis = WeakThis.Get();
+			StrongThis->SpawnPlayer();
+			StrongThis->RespawnTimerHandles[TankRoleID].TimerActiveCache[TimerIndex] = false;
+		}
+	}), RespawnTimers[TankRoleID], false);
+
+	// UI 업데이트 : PlayerRespawnWidgetInstance
+	if (RespawnWidgetInstance)
+	{
+		RespawnWidgetInstance->AddToViewport();
+	}
 }
 
 void ARespawnManager::RespawnHider(ETankRoleID TankRoleID)
@@ -210,16 +247,39 @@ void ARespawnManager::RespawnSniper(ETankRoleID TankRoleID)
 
 void ARespawnManager::SpawnPlayer()
 {
+	FTransform T{};
+	
+	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(PlayerTankClass, T));
+	if (!PlayerPawn)
+	{
+		return ;
+	}
+	// PlayerPawn->SetRoleID(ETankRoleID::Player);
+	PlayerPawn->FinishSpawning(T, true);
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) // Null Guard
+	{
+		return ;
+	}
+
+	PlayerController->Possess(PlayerPawn);
+
+	// UI 업데이트 : PlayerRespawnWidgetInstance
+	if (RespawnWidgetInstance)
+	{
+		RespawnWidgetInstance->RemoveFromParent();
+	}
 }
 
 void ARespawnManager::SpawnHider()
 {
-	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SkyTankClass));
+	FTransform T;
+	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SkyTankClass, T));
 	if (SpawnedPawn)
 	{
-		FFastLogger::LogScreen(FColor::Red, TEXT("Hider Spawned"));
 		SpawnedPawn->SetRoleID(ETankRoleID::Hider);
-		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
+		SpawnedPawn->FinishSpawning(T, true);
 	}
 }
 
@@ -238,12 +298,13 @@ void ARespawnManager::SpawnRusher()
 		SpawnClass = AI_LightTankClass;
 		LightTankClassCount++;
 	}
-	
-	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SpawnClass));
+
+	FTransform T;
+	AAITank* SpawnedPawn = Cast<AAITank>(SpawnActorAtRandomPlace(SpawnClass, T));
 	if (SpawnedPawn)
 	{
 		SpawnedPawn->SetRoleID(ETankRoleID::Rusher);
-		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
+		SpawnedPawn->FinishSpawning(T, true);
 	}
 }
 
@@ -259,28 +320,27 @@ void ARespawnManager::SpawnSniper()
 	if (SpawnedPawn)
 	{
 		SpawnedPawn->SetRoleID(ETankRoleID::Sniper);
-		SpawnedPawn->FinishSpawning(SpawnedPawn->GetTransform());
-		FFastLogger::LogScreen(FColor::Red, TEXT("Sniper Spawned"));
+		SpawnedPawn->FinishSpawning(T, true);
 	}
 }
 
 void ARespawnManager::SpawnTankBeginPlay()
 {
-	for (int i = 0; i < SniperMaxInMap; i++)
+	for (int32 i = 0; i < SniperMaxInMap; i++)
 	{
 		SpawnSniper();
 		SniperMax--;
 		SniperCount++;
 	}
 
-	for (int i = 0; i < HiderMaxInMap; i++)
+	for (int32 i = 0; i < HiderMaxInMap; i++)
 	{
 		SpawnHider();
 		HiderMax--;
 		HiderCount++;
 	}
 
-	for (int i = 0; i < RusherMaxInMap; i++)
+	for (int32 i = 0; i < RusherMaxInMap; i++)
 	{
 		SpawnRusher();
 		RusherMax--;
@@ -288,7 +348,7 @@ void ARespawnManager::SpawnTankBeginPlay()
 	}
 }
 
-APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass)
+APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& T)
 {
 	float Radius = FMath::RandRange(15000.f, 18000.f);
 	float Angle  = FMath::RandRange(0.f, 2.f * PI);
@@ -306,7 +366,8 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass)
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this); // 자신의 충돌 무시
-
+	Params.bTraceComplex = true;
+	
 	// 라인 트레이스 실행
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint, EndPoint, ECC_Visibility, Params))
 	{
@@ -326,7 +387,6 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass)
 	FVector SpawnLocation = FVector(RandomX, RandomY, SpawnZ);
 
 	// 5. 액터 스폰
-	FTransform T{};
 	T.SetLocation(SpawnLocation);
 
 	// 반드시 FinishSpawningActor를 호출해야 함
@@ -336,4 +396,11 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass)
 		SpawnPawn->AutoPossessPlayer = EAutoReceiveInput::Disabled;
 	}
 	return SpawnPawn;
+}
+
+void ARespawnManager::UpdateRemainAllEnemies()
+{
+	UpdateCountEnemyTank(ETankRoleID::Hider, HiderCount + HiderMax);
+	UpdateCountEnemyTank(ETankRoleID::Rusher, RusherCount + RusherMax);
+	UpdateCountEnemyTank(ETankRoleID::Sniper, SniperCount + SniperMax);
 }

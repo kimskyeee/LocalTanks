@@ -36,7 +36,7 @@ void UShellDecalComponent::SpawnDecal(const FHitResult& HitResult, bool bHitTank
 
 	FRotator DecalRotation = FRotator(RotatorFromRIN.Pitch, RotatorFromRIN.Yaw, RandomRoll);
 	
-	int Frame = UKismetMathLibrary::RandomIntegerInRange(0, 3);
+	int32 Frame = UKismetMathLibrary::RandomIntegerInRange(0, 3);
 
 	FVector DecalSize = bHitTank ? FVector(8.0f, 50.0f, 50.0f) : FVector(8.0f, 200.0f, 200.0f);
 	ShellDecalMaterial->SetScalarParameterValue(TEXT("Frame"), Frame);
