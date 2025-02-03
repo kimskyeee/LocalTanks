@@ -155,5 +155,5 @@ void APShell::ProcessShellAttack(AActor* OtherActor, const FHitResult& SweepResu
 	DeActive();
 	Armor->ReleaseShell(ShellInfo.ShellID, this);
 	// Debug Draw
-	DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
+	// DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
 }

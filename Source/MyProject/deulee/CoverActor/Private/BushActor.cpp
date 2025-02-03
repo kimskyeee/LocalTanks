@@ -103,17 +103,17 @@ void ABushActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 	// 공격시 투명화 되는 Delegate를 호출
 	ALightTankCharacter* LightTank = Cast<ALightTankCharacter>(OtherActor);
-	if (LightTank)
+	if (LightTank && LightTank->IsValidLowLevel())
 	{
 		LightTank->GetAttackDelegate().OnAttackDelegate.AddDynamic(this, &ABushActor::OnAttackDetected);
 	}
 	AMyPawn* SkyTank = Cast<AMyPawn>(OtherActor);
-	if (SkyTank)
+	if (SkyTank && SkyTank->IsValidLowLevel())
 	{
 		SkyTank->GetAttackDelegate().OnAttackDelegate.AddDynamic(this, &ABushActor::OnAttackDetected);
 	}
 	AMk_TankPawn* MkTank = Cast<AMk_TankPawn>(OtherActor);
-	if (MkTank)
+	if (MkTank && MkTank->IsValidLowLevel())
 	{
 		MkTank->GetAttackDelegate().OnAttackDelegate.AddDynamic(this, &ABushActor::OnAttackDetected);
 	}
@@ -134,17 +134,17 @@ void ABushActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 
 	ALightTankCharacter* LightTank = Cast<ALightTankCharacter>(OtherActor);
-	if (LightTank)
+	if (LightTank && LightTank->IsValidLowLevel())
 	{
 		LightTank->GetAttackDelegate().OnAttackDelegate.RemoveDynamic(this, &ABushActor::OnAttackDetected);
 	}
 	AMyPawn* SkyTank = Cast<AMyPawn>(OtherActor);
-	if (SkyTank)
+	if (SkyTank && SkyTank->IsValidLowLevel())
 	{
 		SkyTank->GetAttackDelegate().OnAttackDelegate.RemoveDynamic(this, &ABushActor::OnAttackDetected);
 	}
 	AMk_TankPawn* MkTank = Cast<AMk_TankPawn>(OtherActor);
-	if (MkTank)
+	if (MkTank && MkTank->IsValidLowLevel())
 	{
 		MkTank->GetAttackDelegate().OnAttackDelegate.RemoveDynamic(this, &ABushActor::OnAttackDetected);
 	}
