@@ -58,7 +58,7 @@ protected:
 
 	void SpawnTankBeginPlay();
 	APawn* SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& T);
-	
+
 	TMap<ETankRoleID, void (ARespawnManager::*)(ETankRoleID)> RespawnStrategies;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
@@ -112,4 +112,10 @@ protected:
 	int32 SkyTankClassCount = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 LightTankClassCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	TSubclassOf<class UUserWidget> RespawnWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
+	class UUserWidget* RespawnWidgetInstance;
 };

@@ -3,6 +3,7 @@
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
+#include "Blueprint/UserWidget.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
 ARespawnManager::ARespawnManager()
@@ -12,7 +13,7 @@ ARespawnManager::ARespawnManager()
 	RespawnStrategies.Add(ETankRoleID::Rusher, &ARespawnManager::RespawnRusher);
 	RespawnStrategies.Add(ETankRoleID::Sniper, &ARespawnManager::RespawnSniper);
 
-	RespawnTimers.Add(ETankRoleID::Player, 3.f);
+	RespawnTimers.Add(ETankRoleID::Player, 5.f);
 	RespawnTimers.Add(ETankRoleID::Hider, 7.f);
 	RespawnTimers.Add(ETankRoleID::Rusher, 5.f);
 	RespawnTimers.Add(ETankRoleID::Sniper, 10.f);
@@ -33,11 +34,20 @@ ARespawnManager::ARespawnManager()
 
 	// SniperSpawnLocations
 	SniperSpawnLocations.Add(FVector(-32397.732062, -18470.721525, 5309.040213));
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> PlayerRespawnWidgetBPClass
+	(TEXT("/Game/NewSkye/GameUI/Flow_Beta/WBP_Respawn.WBP_Respawn_C"));
+	if (PlayerRespawnWidgetBPClass.Succeeded())
+	{
+		RespawnWidget = PlayerRespawnWidgetBPClass.Class;
+	}
 }
 
 void ARespawnManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	RespawnWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), RespawnWidget);
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -130,6 +140,12 @@ void ARespawnManager::RespawnPlayer(ETankRoleID TankRoleID)
 			StrongThis->RespawnTimerHandles[TankRoleID].TimerActiveCache[TimerIndex] = false;
 		}
 	}), RespawnTimers[TankRoleID], false);
+
+	// UI 업데이트 : PlayerRespawnWidgetInstance
+	if (RespawnWidgetInstance)
+	{
+		RespawnWidgetInstance->AddToViewport();
+	}
 }
 
 void ARespawnManager::RespawnHider(ETankRoleID TankRoleID)
@@ -231,13 +247,15 @@ void ARespawnManager::RespawnSniper(ETankRoleID TankRoleID)
 
 void ARespawnManager::SpawnPlayer()
 {
-	FTransform T;
+	FTransform T{};
 	
-	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(SkyTankClass, T));
+	AMk_TankPawn* PlayerPawn = Cast<AMk_TankPawn>(SpawnActorAtRandomPlace(PlayerTankClass, T));
 	if (!PlayerPawn)
 	{
 		return ;
 	}
+	// PlayerPawn->SetRoleID(ETankRoleID::Player);
+	PlayerPawn->FinishSpawning(T, true);
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!PlayerController) // Null Guard
@@ -246,6 +264,12 @@ void ARespawnManager::SpawnPlayer()
 	}
 
 	PlayerController->Possess(PlayerPawn);
+
+	// UI 업데이트 : PlayerRespawnWidgetInstance
+	if (RespawnWidgetInstance)
+	{
+		RespawnWidgetInstance->RemoveFromParent();
+	}
 }
 
 void ARespawnManager::SpawnHider()
