@@ -55,7 +55,6 @@ UAStarPathFinding::UAStarPathFinding()
 
 void UAStarPathFinding::FindPath(FVector Start, FVector End, TArray<FVector>& OutPath)
 {
-	DrawTileMap();
 	// 시작 노드와 끝 노드를 가져온다.
 	FTileNode* StartNode = GetTileNode(Start);
 	FTileNode* EndNode = GetTileNode(End);
@@ -191,8 +190,6 @@ void UAStarPathFinding::FindPath(FVector Start, FVector End, TArray<FVector>& Ou
 		// 디버그 라인 시작과 끝 위치 계산
 		FVector LineStart({Node->XCenter, Node->YCenter, 0});
 		FVector LineEnd = LineStart + FVector(0, 0, 100000); // Z축으로 100 단위 위로
-
-		DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Green, false, 100000000.f, 0, 10);
 	}
 }
 

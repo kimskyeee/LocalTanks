@@ -3,6 +3,7 @@
 #include "ALightTankCharacter.h"
 #include "FastLogger.h"
 #include "MyPawn.h"
+#include "RespawnUI.h"
 #include "Blueprint/UserWidget.h"
 #include "MyProject/Mk/Character/Public/Mk_TankPawn.h"
 
@@ -47,7 +48,7 @@ void ARespawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	RespawnWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), RespawnWidget);
+	RespawnWidgetInstance = CreateWidget<URespawnUI>(GetWorld(), RespawnWidget);
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -145,6 +146,7 @@ void ARespawnManager::RespawnPlayer(ETankRoleID TankRoleID)
 	if (RespawnWidgetInstance)
 	{
 		RespawnWidgetInstance->AddToViewport();
+		RespawnWidgetInstance->UpdateTimer(RespawnTimers[TankRoleID]);
 	}
 }
 

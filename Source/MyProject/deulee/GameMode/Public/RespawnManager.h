@@ -117,5 +117,5 @@ protected:
 	TSubclassOf<class UUserWidget> RespawnWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	class UUserWidget* RespawnWidgetInstance;
+	class URespawnUI* RespawnWidgetInstance;
 };
