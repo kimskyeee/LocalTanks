@@ -404,10 +404,6 @@ APawn* ARespawnManager::SpawnActorAtRandomPlace(UClass* SpawnClass, FTransform& 
 			SpawnZ = HitResult.Location.Z;
 			break ;
 		}
-		else
-		{
-			FFastLogger::LogScreen(FColor::Red, TEXT("Log : LineTrace Failed"));
-		}
 	}
 
 	float Offset = 200.f;

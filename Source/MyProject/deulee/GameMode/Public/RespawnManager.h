@@ -96,7 +96,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 HiderCount = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	int32 HiderMaxInMap = 2;
+	int32 HiderMaxInMap = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 HiderMax = 4;
 
@@ -104,7 +104,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 RusherCount = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
-	int32 RusherMaxInMap = 2;
+	int32 RusherMaxInMap = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
 	int32 RusherMax = 4;
 
