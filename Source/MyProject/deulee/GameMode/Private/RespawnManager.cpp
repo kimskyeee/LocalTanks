@@ -49,6 +49,14 @@ void ARespawnManager::BeginPlay()
 	Super::BeginPlay();
 
 	RespawnWidgetInstance = CreateWidget<URespawnUI>(GetWorld(), RespawnWidget);
+
+	int32 Max = 10;
+	// 스나이퍼, Rush, Hider의 Max치를 정해진 범위에서 랜덤으로 설정
+	SniperMax = FMath::RandRange(2, 4);
+	Max -= SniperMax;
+	HiderMax = FMath::RandRange(1, FMath::Min(4, Max));
+	Max -= HiderMax;
+	RusherMax = Max;
 }
 
 void ARespawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -328,21 +336,21 @@ void ARespawnManager::SpawnSniper()
 
 void ARespawnManager::SpawnTankBeginPlay()
 {
-	for (int32 i = 0; i < SniperMaxInMap; i++)
+	for (int32 i = 0; i < SniperMaxInMap && SniperMax > 0; i++)
 	{
 		SpawnSniper();
 		SniperMax--;
 		SniperCount++;
 	}
 
-	for (int32 i = 0; i < HiderMaxInMap; i++)
+	for (int32 i = 0; i < HiderMaxInMap && HiderMax > 0; i++)
 	{
 		SpawnHider();
 		HiderMax--;
 		HiderCount++;
 	}
 
-	for (int32 i = 0; i < RusherMaxInMap; i++)
+	for (int32 i = 0; i < RusherMaxInMap && RusherMax > 0; i++)
 	{
 		SpawnRusher();
 		RusherMax--;
