@@ -3,10 +3,18 @@
 #include "UShellPool.h"
 #include "AShell.h"
 #include "FastLogger.h"
+#include "Kismet/GameplayStatics.h"
 
 UArmor::UArmor()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> FireSoundAsset
+	(TEXT("/Game/BuildingDestruction/Tank/MP_Sniper_Rifle.MP_Sniper_Rifle"));
+	if (FireSoundAsset.Succeeded())
+	{
+		FireSound = FireSoundAsset.Object;
+	}
 }
 
 void UArmor::BeginPlay()
@@ -31,6 +39,9 @@ void UArmor::FireShell(EShellID ShellID, FVector Location, FRotator Rotation, FN
 		}
 	}
 	ProjectileShot(ShellID, Location, Rotation, ProfileName, TargetClass);
+
+	// Sound Play For Fire
+	UGameplayStatics::PlaySoundAtLocation(this, FireSound, Location, 1.0f, 1.0f, 0.0f, nullptr);
 }
 
 void UArmor::ReleaseShell(EShellID ShellID, AShell* Shell)

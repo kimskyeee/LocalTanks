@@ -52,7 +52,7 @@ void ARespawnManager::BeginPlay()
 
 	int32 Max = 10;
 	// 스나이퍼, Rush, Hider의 Max치를 정해진 범위에서 랜덤으로 설정
-	SniperMax = FMath::RandRange(2, 4);
+	SniperMax = FMath::RandRange(2, 3);
 	Max -= SniperMax;
 	HiderMax = FMath::RandRange(1, FMath::Min(4, Max));
 	Max -= HiderMax;
