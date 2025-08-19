@@ -107,8 +107,9 @@ bool UMinimapWidget::WorldToPixel(const FVector& World, FVector2D& OutPixel) con
 	FVector2D UV;
 	if (!Manager->WorldToMinimapUV(World, UV)) return false;
 
-	const FVector2D CanvasSize = GetCanvasSize();
-	OutPixel = FVector2D(UV.X * CanvasSize.X, (1.f - UV.Y) * CanvasSize.Y); // UMG v축 반전
+	const FVector2D LayerSize = MarkerLayer->GetCachedGeometry().GetLocalSize();
+	OutPixel = FVector2D(UV.X * LayerSize.X, (1 - UV.Y) * LayerSize.Y);
+	
 	return true;
 }
 

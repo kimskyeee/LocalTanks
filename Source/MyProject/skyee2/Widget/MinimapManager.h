@@ -36,7 +36,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Minimap|Bounds")
-	FBox2D MapBounds = FBox2D(FVector2D(-5000, -5000), FVector2D(5000, 5000));
+	FBox2D MapBounds = FBox2D(FVector2D(-20000, -20000), FVector2D(20000, 20000));
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Minimap")
 	TWeakObjectPtr<class AMinimapCaptureActor> CapActor;
@@ -74,7 +74,10 @@ public:
 	class UMinimapWidget* MinimapWidget;
 
 private:
+	UPROPERTY(EditAnywhere)
 	TArray<TWeakObjectPtr<AActor>> Players;
+	UPROPERTY(EditAnywhere)
 	TArray<TWeakObjectPtr<AActor>> AIs;
+	UPROPERTY(EditAnywhere)
 	TArray<TWeakObjectPtr<AActor>> Destinations;
 };

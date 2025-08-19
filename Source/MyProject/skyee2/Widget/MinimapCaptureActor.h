@@ -31,6 +31,6 @@ public:
 	UFUNCTION()
 	void TakeOneShotCapture(bool bDisableAfter);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=SceneCapture)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SceneCapture")
 	class UTextureRenderTarget2D* MinimapCapture = nullptr;
 };

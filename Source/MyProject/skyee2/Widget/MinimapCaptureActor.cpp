@@ -13,7 +13,7 @@ AMinimapCaptureActor::AMinimapCaptureActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCaptureComponent2D()->ProjectionType = ECameraProjectionMode::Orthographic;
-	GetCaptureComponent2D()->OrthoWidth = 5000.f;
+	GetCaptureComponent2D()->OrthoWidth = 8000.f;
 	GetCaptureComponent2D()->bCaptureEveryFrame = false;
 	GetCaptureComponent2D()->bCaptureOnMovement = false;
 	GetCaptureComponent2D()->CaptureSource = SCS_FinalColorLDR;	
