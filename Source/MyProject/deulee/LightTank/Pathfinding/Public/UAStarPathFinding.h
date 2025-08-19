@@ -5,7 +5,6 @@
 
 #include "CoreMinimal.h"
 #include "FTileNode.h"
-#include "IO/IoPriorityQueue.h"
 #include "UObject/Object.h"
 #include "UAStarPathFinding.generated.h"
 
