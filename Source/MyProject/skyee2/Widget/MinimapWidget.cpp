@@ -44,6 +44,10 @@ void UMinimapWidget::UpdateMarkers()
 	UpdateList(Manager->GetPlayers(), EMinimapMarkerType::Player);
 	UpdateList(Manager->GetAIs(), EMinimapMarkerType::AI);
 	UpdateList(Manager->GetDestinations(), EMinimapMarkerType::Destination);
+
+	// 사라진 액터들도 갱신
+	// 액터가 죽었을때만 갱신해주는게 가장 좋을 것 같다..
+	GarbageCollectInvalidMarkers();
 }
 
 void UMinimapWidget::UpdateList(const TArray<TWeakObjectPtr<AActor>>& List, EMinimapMarkerType Type)

@@ -36,7 +36,7 @@ public:
 	TSubclassOf<class UMinimapMarkerWidget> MarkerWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Minimap")
-	float UpdateInterval = 0.1f; // 업데이트 주기, 10Hz
+	float UpdateInterval = 0.1f; // 업데이트 주기
 
 private:
 	FTimerHandle UpdateHandle;
