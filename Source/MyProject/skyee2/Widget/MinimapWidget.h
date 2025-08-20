@@ -59,7 +59,11 @@ private:
 	// FVector2D GetCanvasSize() const;
 
 	UPROPERTY(EditAnywhere)
-	float MarkerSize = 20.f;
+	float PlayerMarkerSize = 15.f;
+	UPROPERTY(EditAnywhere)
+	float AIMarkerSize = 10.f;
+	UPROPERTY(EditAnywhere)
+	float DesMarkerSize = 35.f;
 	
 	UPROPERTY(EditAnywhere, Category="Minimap|Marker")
 	float EdgePaddingPx = 5.f; // 픽셀 패딩

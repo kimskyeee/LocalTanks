@@ -107,8 +107,19 @@ UMinimapMarkerWidget* UMinimapWidget::GetOrCreateMarker(AActor* Actor, EMinimapM
 	if (UCanvasPanelSlot* CanvasSlot = MarkerLayer->AddChildToCanvas(MarkerWidget))
 	{
 		CanvasSlot->SetAutoSize(false);
-		CanvasSlot->SetSize(FVector2D(MarkerSize, MarkerSize));
 		CanvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		switch (Type)
+		{
+		case EMinimapMarkerType::Player:
+			CanvasSlot->SetSize(FVector2D(PlayerMarkerSize));
+			break;
+		case EMinimapMarkerType::AI:
+			CanvasSlot->SetSize(FVector2D(AIMarkerSize));
+			break;
+		case EMinimapMarkerType::Destination:
+			CanvasSlot->SetSize(FVector2D(DesMarkerSize));
+			break;
+		}
 	}
 	MarkerMap.Add(Actor, MarkerWidget);
 	return MarkerWidget;

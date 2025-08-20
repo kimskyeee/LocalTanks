@@ -131,6 +131,7 @@ bool AMinimapManager::WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV
 	// 화면 밖이면 클램프
 	// U = FMath::Clamp(U, 0.f, 1.f);
 	// V = FMath::Clamp(V, 0.f, 1.f);
+	// 화면 밖이면, UI에 표시하지 않기 위해 클램프를 생략한다
 	
 	OutUV = FVector2D(U, V);
 	return true;
