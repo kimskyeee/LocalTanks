@@ -11,8 +11,6 @@
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
 
-class UCanvasPanelSlot;
-
 void UMinimapWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -58,12 +56,21 @@ void UMinimapWidget::UpdateList(const TArray<TWeakObjectPtr<AActor>>& List, EMin
 		if (!IsValid(Actor)) continue;
 
 		FVector2D Pixel;
-		if (WorldToPixel(Actor->GetActorLocation(), Pixel))
+		if (WorldToPixelIfInside(Actor->GetActorLocation(), Pixel))
 		{
-			if (UMinimapMarkerWidget* MarkerWidget = GetOrCreateMarker(Actor, Type))
+			if (UMinimapMarkerWidget* Marker = GetOrCreateMarker(Actor, Type))
 			{
-				MarkerWidget->SetCanvasPosition(Pixel);
-				MarkerWidget->SetRotationYaw(Actor->GetActorRotation().Yaw);
+				Marker->SetCanvasPosition(Pixel);
+				Marker->SetRotationYaw(Actor->GetActorRotation().Yaw);
+				Marker->SetVisibility(ESlateVisibility::HitTestInvisible);
+			}
+		}
+		else
+		{
+			// 밖이면 숨김
+			if (UMinimapMarkerWidget** Found = MarkerMap.Find(Actor))
+			{
+				(*Found)->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
 	}
@@ -89,16 +96,19 @@ UMinimapMarkerWidget* UMinimapWidget::GetOrCreateMarker(AActor* Actor, EMinimapM
 {
 	if (!MarkerLayer || !MarkerWidgetClass || !IsValid(Actor)) return nullptr;
 
+	// 이미 존재하는 마커 있으면 반환 (중복 생성 방지)
 	if (UMinimapMarkerWidget** Found = MarkerMap.Find(Actor)) return *Found;
 
+	// 없으면 새로운 마커를 만들자
 	UMinimapMarkerWidget* MarkerWidget = CreateWidget<UMinimapMarkerWidget>(GetWorld(), MarkerWidgetClass);
 	if (!MarkerWidget) return nullptr;
 
 	MarkerWidget->InitMarker(Type);
-	if (UCanvasPanelSlot* CanvasSlot  = MarkerLayer->AddChildToCanvas(MarkerWidget))
+	if (UCanvasPanelSlot* CanvasSlot = MarkerLayer->AddChildToCanvas(MarkerWidget))
 	{
-		CanvasSlot ->SetAutoSize(true);
-		CanvasSlot ->SetAlignment(FVector2D(0.5f, 0.5f));
+		CanvasSlot->SetAutoSize(false);
+		CanvasSlot->SetSize(FVector2D(MarkerSize, MarkerSize));
+		CanvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
 	}
 	MarkerMap.Add(Actor, MarkerWidget);
 	return MarkerWidget;
@@ -117,6 +127,35 @@ bool UMinimapWidget::WorldToPixel(const FVector& World, FVector2D& OutPixel) con
 	return true;
 }
 
+bool UMinimapWidget::WorldToPixelIfInside(const FVector& World, FVector2D& OutPixel) const
+{
+	if (!Manager.IsValid() || !MarkerLayer) return false;
+
+	FVector2D UV;
+	if (!Manager->WorldToMinimapUV(World, UV)) return false;
+
+	const FVector2D LayerSize = MarkerLayer->GetCachedGeometry().GetLocalSize();
+	if (LayerSize.X <= 0.f || LayerSize.Y <= 0.f) return false;
+
+	// 픽셀/퍼센트 패딩을 UV 기준으로 변환
+	const FVector2D PadUV_ByPx  = FVector2D(EdgePaddingPx / LayerSize.X, EdgePaddingPx / LayerSize.Y);
+	const FVector2D PadUV = FVector2D(
+		FMath::Clamp(PadUV_ByPx.X, 0.f, 0.49f),
+		FMath::Clamp(PadUV_ByPx.Y, 0.f, 0.49f)
+	);
+
+	// **내부 판정**: 0..1 사이(패딩 고려)일 때만 true
+	const bool bInside =
+		(UV.X >= 0.f + PadUV.X) && (UV.X <= 1.f - PadUV.X) &&
+		(UV.Y >= 0.f + PadUV.Y) && (UV.Y <= 1.f - PadUV.Y);
+	if (!bInside) return false;
+
+	// 픽셀 좌표 변환 (여기는 클램프 불필요)
+	OutPixel = FVector2D(UV.X * LayerSize.X, (1.f - UV.Y) * LayerSize.Y);
+	return true;
+}
+
+/* // 캔버스에 비례해서 마커 스케일을 계산할 수 있음
 FVector2D UMinimapWidget::GetCanvasSize() const
 {
 	if (!MarkerLayer) return FVector2D::ZeroVector;
@@ -131,3 +170,4 @@ FVector2D UMinimapWidget::GetCanvasSize() const
 	// MarkerLayer에 Slot 사이즈 정보가 없다면, 뷰포트 기준 사이즈를 fallback으로 사용
 	return UWidgetLayoutLibrary::GetViewportWidgetGeometry(GetWorld()).GetLocalSize();
 }
+*/

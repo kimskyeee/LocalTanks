@@ -89,44 +89,6 @@ void AMinimapManager::CollectActorsByClass()
 
 bool AMinimapManager::WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV) const
 {
-	// 월드 좌표(WorldLoc)를 미니맵 좌표계(정규화된 UV, 0~1 범위)로 변환
-
-	/*const USceneCaptureComponent2D* Capture = CapActor->GetCaptureComponent2D();
-	if (!Capture) return false;
-
-	// 오소그래픽 모드/폭 확인
-	if (Capture->ProjectionType != ECameraProjectionMode::Orthographic) return false;
-	const float OrthoWidth = Capture->OrthoWidth;
-	if (OrthoWidth <= KINDA_SMALL_NUMBER) return false;
-
-	// 렌더 타겟 종횡비로 오소그래픽 세로 높이 산출
-	const UTextureRenderTarget2D* RT = Capture->TextureTarget;
-	const int32 SizeX = (RT ? RT->SizeX : 1024);
-	const int32 SizeY = (RT ? RT->SizeY : 1024);
-	if (SizeX <= 0 || SizeY <= 0) return false;
-	
-	// 미니맵이 커버할 월드 XY 범위
-	const FVector2D Min = MapBounds.Min;
-	const FVector2D Max = MapBounds.Max;
-
-	// 맵의 폭과 높이(DX, DY)를 구하기
-	const float DX = (Max.X - Min.X);
-	const float DY = (Max.Y - Min.Y);
-	if (DX <= KINDA_SMALL_NUMBER || DY <= KINDA_SMALL_NUMBER) return false;
-
-	FVector2D Pos(WorldLoc.X, WorldLoc.Y);
-	
-	FVector2D UV(
-		(Pos.X - Min.X) / DX,
-		(Pos.Y - Min.Y) / DY
-	);
-
-	UV.X = FMath::Clamp(UV.X, 0.f, 1.f);
-	UV.Y = FMath::Clamp(UV.Y, 0.f, 1.f);
-
-	OutUV = FVector2D(UV.Y, UV.X);
-	return true;*/
-
 	// 캡처 컴포넌트 유효성 확인
 	if (!CapActor.Get()) return false;
 	const USceneCaptureComponent2D* Capture = CapActor->GetCaptureComponent2D();
@@ -167,10 +129,9 @@ bool AMinimapManager::WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV
 	float V = (Yu + HalfH) / (OrthoHeight); // 세로 방향
 
 	// 화면 밖이면 클램프
-	U = FMath::Clamp(U, 0.f, 1.f);
-	V = FMath::Clamp(V, 0.f, 1.f);
-
-	//  X/Y를 뒤집어 반환
+	// U = FMath::Clamp(U, 0.f, 1.f);
+	// V = FMath::Clamp(V, 0.f, 1.f);
+	
 	OutUV = FVector2D(U, V);
 	return true;
 }

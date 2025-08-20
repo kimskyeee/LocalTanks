@@ -27,6 +27,7 @@ public:
 protected:
 	virtual void NativeOnInitialized() override;
 
+	
 	UPROPERTY(meta=(BindWidget))
 	class UImage* IconImage;
 
@@ -36,6 +37,7 @@ protected:
 	UTexture2D* AIIcon;
 	UPROPERTY(EditAnywhere, Category="Minimap|Icon")
 	UTexture2D* DestinationIcon;
+
 
 private:
 	EMinimapMarkerType Type = EMinimapMarkerType::Player;

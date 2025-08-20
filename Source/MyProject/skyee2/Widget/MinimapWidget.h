@@ -55,6 +55,16 @@ private:
 	UMinimapMarkerWidget* GetOrCreateMarker(AActor* Actor, EMinimapMarkerType Type);
 	UFUNCTION()
 	bool WorldToPixel(const FVector& World, FVector2D& OutPixel) const;
+	// UFUNCTION()
+	// FVector2D GetCanvasSize() const;
+
+	UPROPERTY(EditAnywhere)
+	float MarkerSize = 20.f;
+	
+	UPROPERTY(EditAnywhere, Category="Minimap|Marker")
+	float EdgePaddingPx = 5.f; // 픽셀 패딩
+
 	UFUNCTION()
-	FVector2D GetCanvasSize() const;
+	bool WorldToPixelIfInside(const FVector& World, FVector2D& OutPixel) const;
+
 };

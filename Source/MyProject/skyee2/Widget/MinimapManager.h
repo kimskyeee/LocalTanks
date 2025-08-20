@@ -63,8 +63,8 @@ public:
 	const TArray<TWeakObjectPtr<AActor>>& GetPlayers() const { return Players; }
 	const TArray<TWeakObjectPtr<AActor>>& GetAIs() const { return AIs; }
 	const TArray<TWeakObjectPtr<AActor>>& GetDestinations() const { return Destinations; }
-
-	// 월드 → [0,1]^2
+	
+	// 월드 좌표(WorldLoc)를 미니맵 좌표계로 변환
 	UFUNCTION(BlueprintCallable, Category="Minimap|Mapping")
 	bool WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV) const;
 
