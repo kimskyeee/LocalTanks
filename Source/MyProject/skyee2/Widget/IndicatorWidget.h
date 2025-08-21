@@ -76,11 +76,14 @@ private:
 	// 스크린 좌표가 뷰포트 내부인지 판단
 	bool IsInViewportRect(const FVector2D& Px) const;
 	
-	FVector2D ComputeEdgeIntersection(const FVector2D& From, const FVector2D& DirNorm) const;
+	FVector2D ComputeEdgeIntersection(const FVector2D& StartFrom, const FVector2D& DirNorm) const;
 
 	// 오프스크린 방향(카메라 기준 방위) → 화면 평면 상 2D 단위 벡터
 	FVector2D BearingToScreenDir2D(const FVector& WorldTarget) const;
 
 	// 위치·각도 반영 (OnScreen일 때는 숨기자)
 	void UpdateIndicatorLocation(bool bOnScreen);
+	
+	FVector2D SavedViewportSize = FVector2D::ZeroVector;
+	float SavedViewportScale = 1.f;
 };

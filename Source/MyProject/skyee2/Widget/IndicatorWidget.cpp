@@ -12,14 +12,14 @@
 #include "GameFramework/PlayerController.h"
 #include "MyProject/skyee2/DestinationActor/DestinationActor.h"
 
-// ===== 내부 헬퍼 =====
+// 내부 헬퍼
 static FORCEINLINE bool NearlyZero2D(const FVector2D& V) { return FMath::IsNearlyZero(V.X) && FMath::IsNearlyZero(V.Y); }
 
 void UIndicatorWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	PC = GetWorld() ? GetWorld()->GetFirstPlayerController() : nullptr;
+	PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	DestinationActor = Cast<ADestinationActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ADestinationActor::StaticClass()));
 
 	SaveViewportSize(); // 초기 경계 계산
@@ -37,21 +37,31 @@ void UIndicatorWidget::NativeTick(const FGeometry& MyGeometry, float DeltaSecond
 
 void UIndicatorWidget::SaveViewportSize()
 {
-	const FVector2D ViewportLogical = UWidgetLayoutLibrary::GetViewportSize(this);
-	const float ViewportScale = FMath::Max( UWidgetLayoutLibrary::GetViewportScale(this), 0.001f );
+	const FVector2D CurrentViewportSize = UWidgetLayoutLibrary::GetViewportSize(this);
+	const float CurrentViewportScale = FMath::Max( UWidgetLayoutLibrary::GetViewportScale(this), 0.001f );
 
-	ViewportPx = ViewportLogical / ViewportScale;
+	// 이전 상태와 동일하다면 아무 것도 안 함
+	if (CurrentViewportSize.Equals(SavedViewportSize, 0.5f) &&
+		FMath::IsNearlyEqual(CurrentViewportScale, SavedViewportScale, 0.001f))
+	{
+		return;
+	}
+
+	SavedViewportSize = CurrentViewportSize;
+	SavedViewportScale = CurrentViewportScale;
+	
+	ViewportPx = SavedViewportSize / SavedViewportScale;
 	ScreenCenterPx = ViewportPx * 0.5f;
 
 	// 인디케이터 위젯(화살표+텍스트 포함)의 픽셀 크기 추정
-	FVector2D IndicatorSizePx = FVector2D(32.f, 32.f);
+	FVector2D IndicatorSize = FVector2D(32.f, 32.f);
 	if (OffScreenSizeBox)
 	{
 		// SizeBox에 명시 크기가 있으면 우선 사용
 		const FVector2D Desired = OffScreenSizeBox->GetDesiredSize();
 		if (Desired.X > 1.f && Desired.Y > 1.f)
 		{
-			IndicatorSizePx = Desired;
+			IndicatorSize = Desired;
 		}
 
 		if (UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(OffScreenSizeBox))
@@ -59,12 +69,12 @@ void UIndicatorWidget::SaveViewportSize()
 			const FVector2D SlotSize = CanvasSlot->GetSize();
 			if (SlotSize.X > 1.f && SlotSize.Y > 1.f)
 			{
-				IndicatorSizePx = SlotSize;
+				IndicatorSize = SlotSize;
 			}
 		}
 	}
 
-	const FVector2D Half = IndicatorSizePx * 0.5f;
+	const FVector2D Half = IndicatorSize * 0.5f;
 	ClampMin = Half + FVector2D(EdgePaddingPx, EdgePaddingPx);
 	ClampMax = ViewportPx - Half - FVector2D(EdgePaddingPx, EdgePaddingPx);
 
@@ -128,25 +138,30 @@ FVector2D UIndicatorWidget::BearingToScreenDir2D(const FVector& WorldTarget) con
 	return FVector2D(FMath::Sin(R), -FMath::Cos(R)).GetSafeNormal();
 }
 
-FVector2D UIndicatorWidget::ComputeEdgeIntersection(const FVector2D& From, const FVector2D& DirNorm) const
+FVector2D UIndicatorWidget::ComputeEdgeIntersection(const FVector2D& StartFrom, const FVector2D& DirNorm) const
 {
-	FVector2D D = DirNorm;
-	if (NearlyZero2D(D)) return FMath::Clamp(From, ClampMin, ClampMax);
+	// 입력 방향이 거의 0 → 움직이지 않음 → 그냥 박스 안에 Clamp
+	if (NearlyZero2D(DirNorm)) return FMath::Clamp(StartFrom, ClampMin, ClampMax);
 
-	auto HitT = [](float c, float d, float minv, float maxv)
+	auto ComputeHitT = [](float StartCoord, float DirAxis, float BoxMin, float BoxMax)
 	{
-		if (FMath::IsNearlyZero(d)) return TNumericLimits<float>::Max();
-		const float target = (d > 0.f) ? maxv : minv;
-		return (target - c) / d;
+		// 진행 방향이 거의 0이라면 (해당 축으로 움직이지 않음) → 충돌 없음
+		if (FMath::IsNearlyZero(DirAxis)) return TNumericLimits<float>::Max();
+		
+		// 양수 방향이면 경계의 Max, 음수 방향이면 Min과 만남
+		const float TargetBoundary = (DirAxis > 0.f) ? BoxMax : BoxMin;
+
+		// (경계 - 시작좌표) / 진행방향 = 해당 축에서 충돌하는 시점 t
+		return (TargetBoundary - StartCoord) / DirAxis;
 	};
 
-	const float tx = HitT(From.X, D.X, ClampMin.X, ClampMax.X);
-	const float ty = HitT(From.Y, D.Y, ClampMin.Y, ClampMax.Y);
-	float t = FMath::Min(tx, ty);
+	const float tHitX = ComputeHitT(StartFrom.X, DirNorm.X, ClampMin.X, ClampMax.X);
+	const float tHitY = ComputeHitT(StartFrom.Y, DirNorm.Y, ClampMin.Y, ClampMax.Y);
+	float tHit = FMath::Min(tHitX, tHitY);
 
 	// 살짝 안쪽으로 (경계에서 깜빡임 방지)
-	t = FMath::Max(0.f, t) * 0.999f;
-	const FVector2D P = From + D * t;
+	tHit = FMath::Max(0.f, tHit) * 0.999f;
+	const FVector2D P = StartFrom + DirNorm * tHit;
 
 	return FVector2D(
 		FMath::Clamp(P.X, ClampMin.X, ClampMax.X),
