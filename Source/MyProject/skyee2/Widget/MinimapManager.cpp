@@ -70,7 +70,7 @@ void AMinimapManager::CollectActorsByClass()
 	AIs.Reset();
 	Destinations.Reset();
 
-	auto Collect = [&](TSubclassOf<AActor> CollectClass, TArray<TWeakObjectPtr<AActor>>& Out)
+	auto Collect = [&](const TSubclassOf<AActor>& CollectClass, TArray<TWeakObjectPtr<AActor>>& Out)
 	{
 		if (!*CollectClass) return;
 		TArray<AActor*> Found;
@@ -89,7 +89,6 @@ void AMinimapManager::CollectActorsByClass()
 
 bool AMinimapManager::WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV) const
 {
-	// 캡처 컴포넌트 유효성 확인
 	if (!CapActor.Get()) return false;
 	const USceneCaptureComponent2D* Capture = CapActor->GetCaptureComponent2D();
 	if (!Capture) return false;
@@ -99,7 +98,7 @@ bool AMinimapManager::WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV
 	const float OrthoWidth = Capture->OrthoWidth;
 	if (OrthoWidth <= KINDA_SMALL_NUMBER) return false;
 
-	// 렌더 타겟 종횡비로 오소그래픽 "세로 높이" 산출
+	// 렌더 타겟 종횡비로 오소그래픽 세로 높이 산출
 	const UTextureRenderTarget2D* RT = Capture->TextureTarget;
 	const int32 SizeX = (RT ? RT->SizeX : 1024);
 	const int32 SizeY = (RT ? RT->SizeY : 1024);
@@ -131,7 +130,7 @@ bool AMinimapManager::WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV
 	// 화면 밖이면 클램프
 	// U = FMath::Clamp(U, 0.f, 1.f);
 	// V = FMath::Clamp(V, 0.f, 1.f);
-	// 화면 밖이면, UI에 표시하지 않기 위해 클램프를 생략한다
+	// 화면 밖이면, UI에 표시하지 않기 위해 클램프를 생략한다 (생략하지 않을시 UI경계에 멈춰있음)
 	
 	OutUV = FVector2D(U, V);
 	return true;

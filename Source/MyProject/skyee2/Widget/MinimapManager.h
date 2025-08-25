@@ -69,9 +69,9 @@ public:
 	bool WorldToMinimapUV(const FVector& WorldLoc, FVector2D& OutUV) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Minimap|UI")
-	TSubclassOf<class UMinimapWidget> MinimapWidgetClass;
+	TSubclassOf<class UMinimapWidget> MinimapWidgetClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Minimap|UI")
-	class UMinimapWidget* MinimapWidget;
+	class UMinimapWidget* MinimapWidget = nullptr;
 
 private:
 	UPROPERTY(EditAnywhere)

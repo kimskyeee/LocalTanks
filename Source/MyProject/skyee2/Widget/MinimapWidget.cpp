@@ -125,7 +125,7 @@ UMinimapMarkerWidget* UMinimapWidget::GetOrCreateMarker(AActor* Actor, EMinimapM
 	return MarkerWidget;
 }
 
-bool UMinimapWidget::WorldToPixel(const FVector& World, FVector2D& OutPixel) const
+/*bool UMinimapWidget::WorldToPixel(const FVector& World, FVector2D& OutPixel) const
 {
 	if (!Manager.IsValid() || !MarkerLayer) return false;
 
@@ -136,7 +136,7 @@ bool UMinimapWidget::WorldToPixel(const FVector& World, FVector2D& OutPixel) con
 	OutPixel = FVector2D(UV.X * LayerSize.X, (1 - UV.Y) * LayerSize.Y);
 	
 	return true;
-}
+}*/
 
 bool UMinimapWidget::WorldToPixelIfInside(const FVector& World, FVector2D& OutPixel) const
 {
@@ -148,14 +148,14 @@ bool UMinimapWidget::WorldToPixelIfInside(const FVector& World, FVector2D& OutPi
 	const FVector2D LayerSize = MarkerLayer->GetCachedGeometry().GetLocalSize();
 	if (LayerSize.X <= 0.f || LayerSize.Y <= 0.f) return false;
 
-	// 픽셀/퍼센트 패딩을 UV 기준으로 변환
+	// 픽셀 패딩을 UV 기준으로 변환
 	const FVector2D PadUV_ByPx  = FVector2D(EdgePaddingPx / LayerSize.X, EdgePaddingPx / LayerSize.Y);
 	const FVector2D PadUV = FVector2D(
 		FMath::Clamp(PadUV_ByPx.X, 0.f, 0.49f),
 		FMath::Clamp(PadUV_ByPx.Y, 0.f, 0.49f)
 	);
 
-	// **내부 판정**: 0..1 사이(패딩 고려)일 때만 true
+	// 내부 판정: 0~1 사이(패딩 고려)일 때만 true
 	const bool bInside =
 		(UV.X >= 0.f + PadUV.X) && (UV.X <= 1.f - PadUV.X) &&
 		(UV.Y >= 0.f + PadUV.Y) && (UV.Y <= 1.f - PadUV.Y);

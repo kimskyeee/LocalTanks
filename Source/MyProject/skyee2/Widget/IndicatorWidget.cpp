@@ -107,12 +107,19 @@ void UIndicatorWidget::UpdateIndicatorText()
 
 bool UIndicatorWidget::ProjectWorldToScreenPx(const FVector& WorldPos, FVector2D& OutPx) const
 {
-	if (!PC) { OutPx = FVector2D::ZeroVector; return false; }
+	if (!PC)
+	{
+		OutPx = FVector2D::ZeroVector;
+		return false;
+	}
 
+	// 월드 좌표를 스크린 좌표로 변환
 	FVector2D ScreenPosLogical = FVector2D::ZeroVector;
 	const bool bOk = UGameplayStatics::ProjectWorldToScreen(PC, WorldPos, ScreenPosLogical, true);
 
+	// ProjectWorldToScreen은 DPI 스케일이 적용된 좌표를 반환한다
 	const float ViewportScale = FMath::Max( UWidgetLayoutLibrary::GetViewportScale(this), 0.001f );
+	// ViewportScale나누면 해상도나 DPI에 무관하게 일정한 기준 좌표계에서 위치 계산 가능!
 	OutPx = ScreenPosLogical / ViewportScale;
 	return bOk;
 }
@@ -124,17 +131,21 @@ bool UIndicatorWidget::IsInViewportRect(const FVector2D& Px) const
 
 FVector2D UIndicatorWidget::BearingToScreenDir2D(const FVector& WorldTarget) const
 {
+	// 카메라에서 특정 월드 위치(Target)가 어느 방향(화면 좌표계 기준)에 있는지를 2D 단위 벡터로 반환
 	if (!PC || !PC->PlayerCameraManager) return FVector2D(1.f, 0.f);
 
 	const FVector CamLoc = PC->PlayerCameraManager->GetCameraLocation();
 	const FRotator CamRot = PC->PlayerCameraManager->GetCameraRotation();
 
+	// 타겟 방향: 월드 → 카메라 기준
 	const FVector Dir3D = (WorldTarget - CamLoc).GetSafeNormal();
 	const float ToYaw = Dir3D.Rotation().Yaw;
+	// 카메라에서의 상대 각도 (+면 목표가 오른쪽에 있군!, -면 목표가 왼쪽에 있군!)
 	const float DeltaYawDeg = FMath::FindDeltaAngleDegrees(CamRot.Yaw, ToYaw);
 	const float R = FMath::DegreesToRadians(DeltaYawDeg);
 
 	// 스크린: +X=오른쪽, +Y=아래
+	// 화면 중앙에서 목표가 향하는 방향(단위벡터)를 얻기
 	return FVector2D(FMath::Sin(R), -FMath::Cos(R)).GetSafeNormal();
 }
 
@@ -143,6 +154,7 @@ FVector2D UIndicatorWidget::ComputeEdgeIntersection(const FVector2D& StartFrom, 
 	// 입력 방향이 거의 0 → 움직이지 않음 → 그냥 박스 안에 Clamp
 	if (NearlyZero2D(DirNorm)) return FMath::Clamp(StartFrom, ClampMin, ClampMax);
 
+	// 축별 충돌 시점 t 계산
 	auto ComputeHitT = [](float StartCoord, float DirAxis, float BoxMin, float BoxMax)
 	{
 		// 진행 방향이 거의 0이라면 (해당 축으로 움직이지 않음) → 충돌 없음
@@ -216,7 +228,7 @@ void UIndicatorWidget::SetVisibilityIndicator()
 	// 20m 이하일때 숨기자
 	if (DistMeters <= HideMeter)
 	{
-		UpdateIndicatorLocation(true);   // 내부에서 Hidden 처리
+		UpdateIndicatorLocation(true); // 내부에서 Hidden 처리
 		return;
 	}
 
