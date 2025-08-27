@@ -161,7 +161,7 @@ bool UMinimapWidget::WorldToPixelIfInside(const FVector& World, FVector2D& OutPi
 		(UV.Y >= 0.f + PadUV.Y) && (UV.Y <= 1.f - PadUV.Y);
 	if (!bInside) return false;
 
-	// 픽셀 좌표 변환 (여기는 클램프 불필요)
+	// 픽셀 좌표 변환
 	OutPixel = FVector2D(UV.X * LayerSize.X, (1.f - UV.Y) * LayerSize.Y);
 	return true;
 }

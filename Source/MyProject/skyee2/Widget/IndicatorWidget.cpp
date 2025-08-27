@@ -144,8 +144,7 @@ FVector2D UIndicatorWidget::BearingToScreenDir2D(const FVector& WorldTarget) con
 	const float DeltaYawDeg = FMath::FindDeltaAngleDegrees(CamRot.Yaw, ToYaw);
 	const float R = FMath::DegreesToRadians(DeltaYawDeg);
 
-	// 스크린: +X=오른쪽, +Y=아래
-	// 화면 중앙에서 목표가 향하는 방향(단위벡터)를 얻기
+	// 화면 중앙에서 목표가 향하는 방향(단위벡터)를 얻기 (+X=오른쪽, +Y=아래)
 	return FVector2D(FMath::Sin(R), -FMath::Cos(R)).GetSafeNormal();
 }
 
