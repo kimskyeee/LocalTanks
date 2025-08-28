@@ -97,7 +97,7 @@ UMinimapMarkerWidget* UMinimapWidget::GetOrCreateMarker(AActor* Actor, EMinimapM
 	if (!MarkerLayer || !MarkerWidgetClass || !IsValid(Actor)) return nullptr;
 
 	// 이미 존재하는 마커 있으면 반환 (중복 생성 방지)
-	if (UMinimapMarkerWidget** Found = MarkerMap.Find(Actor)) return *Found;
+	if (UMinimapMarkerWidget* Found = MarkerMap.FindRef(Actor)) return Found;
 
 	// 없으면 새로운 마커를 만들자
 	UMinimapMarkerWidget* MarkerWidget = CreateWidget<UMinimapMarkerWidget>(GetWorld(), MarkerWidgetClass);
